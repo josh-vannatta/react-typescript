@@ -17,6 +17,7 @@ export class App extends React.Component {
           <Route name="about" path="/about" component={AboutPage}/>
           <Route name="authors" path="/authors" component={AuthorPage}/>
           <Route name="add-author" path="/add-author" component={ManageAuthorsPage}/>
+          <Route name="manage-author" path="/author/:id" component={ManageAuthorsPage}/>
           <Redirect from="/aboot" to="/about" />
           <Redirect from="/about/*" to="/about" />
           <Redirect from="/home" to="/" />

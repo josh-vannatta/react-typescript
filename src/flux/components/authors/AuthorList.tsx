@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 export interface AuthorListProps {
     authors: Array<Object>;
@@ -16,7 +17,7 @@ export default class AuthorList extends React.Component<AuthorListProps, {}> {
     return (
       <tr key={author.id}>
         <td scope="row">
-          <a href={"#authors/" + author.id} > {author.id}</a>
+          <Link to={"author/" + author.id} > {author.id}</Link>
         </td>
         <td>{author.firstName} {author.lastName}</td>
       </tr>

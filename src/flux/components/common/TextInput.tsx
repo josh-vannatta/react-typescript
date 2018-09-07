@@ -1,13 +1,13 @@
 import * as React from 'react';
 
 export interface TextInputProps {
-  onChange,
-  name,
-  label,
-  wrapperClass?,
-  placeholder?,
-  value?,
-  error?
+  onChange: Function,
+  name: string, 
+  label: string,
+  wrapperClass?: string,
+  placeholder?: string, 
+  value?: string, 
+  error?: Array<string> 
 }
 export class TextInput extends React.Component <TextInputProps, {}> {
   private inputState = ['valid'];
@@ -17,6 +17,7 @@ export class TextInput extends React.Component <TextInputProps, {}> {
   }
 
    public render(): JSX.Element {
+     this.inputState = ['valid'];
      if (this.props.error)
       this.inputState = ['has-error', 'invalid'];
      return (
@@ -27,8 +28,8 @@ export class TextInput extends React.Component <TextInputProps, {}> {
            name={this.props.name}
            ref={this.props.name}
            placeholder={this.props.placeholder}
-           onChange={this.props.onChange}
-           value={this.props.value}/>
+           onChange={(e)=>this.props.onChange(e)}
+           value={this.props.value} />
          <small className="text-danger">{this.props.error}</small>
        </div>
      )

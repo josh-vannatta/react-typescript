@@ -407,6 +407,7 @@ var App = (function (_super) {
                 React.createElement(react_router_dom_1.Route, { name: "about", path: "/about", component: AboutPage_1.AboutPage }),
                 React.createElement(react_router_dom_1.Route, { name: "authors", path: "/authors", component: AuthorPage_1.AuthorPage }),
                 React.createElement(react_router_dom_1.Route, { name: "add-author", path: "/add-author", component: ManageAuthorsPage_1.ManageAuthorsPage }),
+                React.createElement(react_router_dom_1.Route, { name: "manage-author", path: "/author/:id", component: ManageAuthorsPage_1.ManageAuthorsPage }),
                 React.createElement(react_router_dom_1.Redirect, { from: "/aboot", to: "/about" }),
                 React.createElement(react_router_dom_1.Redirect, { from: "/about/*", to: "/about" }),
                 React.createElement(react_router_dom_1.Redirect, { from: "/home", to: "/" }),
@@ -711,9 +712,10 @@ var AuthorForm = (function (_super) {
         return _super.call(this, props) || this;
     }
     AuthorForm.prototype.render = function () {
+        var errors = this.props.errors;
         return (React.createElement("form", { onSubmit: this.props.onSave },
-            React.createElement(TextInput_1.TextInput, { name: "firstName", label: "First name", onChange: this.props.update, value: this.props.author.firstName }),
-            React.createElement(TextInput_1.TextInput, { name: "lastName", label: "Last name", onChange: this.props.update, value: this.props.author.lastName }),
+            React.createElement(TextInput_1.TextInput, { name: "firstName", label: "First name", onChange: this.props.update, value: this.props.author.firstName, error: errors.firstName ? errors.firstName : false }),
+            React.createElement(TextInput_1.TextInput, { name: "lastName", label: "Last name", onChange: this.props.update, error: errors.lastName ? errors.lastName : false, value: this.props.author.lastName }),
             React.createElement("button", { type: "submit", className: "btn btn-primary" }, "Submit")));
     };
     return AuthorForm;
@@ -747,6 +749,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
 var AuthorList = (function (_super) {
     __extends(AuthorList, _super);
     function AuthorList() {
@@ -755,7 +758,7 @@ var AuthorList = (function (_super) {
     AuthorList.prototype.getAuthorRow = function (author) {
         return (React.createElement("tr", { key: author.id },
             React.createElement("td", { scope: "row" },
-                React.createElement("a", { href: "#authors/" + author.id },
+                React.createElement(react_router_dom_1.Link, { to: "author/" + author.id },
                     " ",
                     author.id)),
             React.createElement("td", null,
@@ -863,34 +866,70 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
 var Layout_1 = __webpack_require__(/*! ../common/Layout */ "./src/flux/components/common/Layout.tsx");
 var AuthorForm_1 = __webpack_require__(/*! ./AuthorForm */ "./src/flux/components/authors/AuthorForm.tsx");
+var AuthorApi_1 = __webpack_require__(/*! ../../api/AuthorApi */ "./src/flux/api/AuthorApi.ts");
 var ManageAuthorsPage = (function (_super) {
     __extends(ManageAuthorsPage, _super);
-    function ManageAuthorsPage() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function ManageAuthorsPage(props) {
+        var _this = _super.call(this, props) || this;
+        _this.title = 'Create new author';
         _this.state = {
             author: {
                 id: '',
                 firstName: '',
                 lastName: ''
-            }
+            },
+            authorSaved: false,
+            dirty: false,
+            invalid: false,
+            errors: {}
         };
+        var activeAuthor = props.match.params.id;
+        if (activeAuthor) {
+            activeAuthor = AuthorApi_1.default.getAuthorById(activeAuthor);
+            _this.title = 'Edit author';
+            _this.state.author = {
+                id: activeAuthor.id,
+                firstName: activeAuthor.firstName,
+                lastName: activeAuthor.lastName
+            };
+        }
         return _this;
     }
     ManageAuthorsPage.prototype.updateAuthor = function (e) {
         this.state.author[e.target.name] = e.target.value;
-        this.setState({ author: this.state.author });
+        this.setState({ author: this.state.author, dirty: true });
+        if (this.state.invalid)
+            this.formValid();
     };
     ManageAuthorsPage.prototype.onSaveAuthor = function (e) {
         e.preventDefault();
-        console.log(this.state.author.firstName + " " + this.state.author.lastName);
+        if (!this.formValid())
+            return;
+        AuthorApi_1.default.saveAuthor(this.state.author);
+        this.setState({ authorSaved: true, dirty: false });
+    };
+    ManageAuthorsPage.prototype.formValid = function () {
+        this.state.errors = {};
+        if (this.state.author.firstName.length < 3) {
+            this.state.errors['firstName'] = 'First name must be at least 3 characters';
+        }
+        if (this.state.author.lastName.length < 3) {
+            this.state.errors['lastName'] = 'Last name must be at least 3 characters';
+        }
+        this.setState({ errors: this.state.errors, invalid: true });
+        return Object.keys(this.state.errors).length == 0;
     };
     ManageAuthorsPage.prototype.render = function () {
         var _this = this;
+        if (this.state.authorSaved)
+            return React.createElement(react_router_dom_1.Redirect, { to: "/authors" });
         return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
-                React.createElement("h1", null, "Create author"),
-                React.createElement(AuthorForm_1.AuthorForm, { author: this.state.author, update: function (e) { return _this.updateAuthor(e); }, onSave: function (e) { return _this.onSaveAuthor(e); } }),
+                React.createElement(react_router_dom_1.Prompt, { when: this.state.dirty, message: function () { return 'Leave page and lose your progress?'; } }),
+                React.createElement("h1", null, this.title),
+                React.createElement(AuthorForm_1.AuthorForm, { author: this.state.author, update: function (e) { return _this.updateAuthor(e); }, onSave: function (e) { return _this.onSaveAuthor(e); }, errors: this.state.errors }),
                 React.createElement("p", { className: "mt-3" },
                     this.state.author.firstName,
                     " \u00A0",
@@ -977,18 +1016,18 @@ var NavLinks = (function (_super) {
     }
     NavLinks.prototype.render = function () {
         return (React.createElement("nav", { className: "navbar  navbar-expand-sm navbar-light bg-light z-depth-1" },
-            React.createElement(react_router_dom_1.Link, { className: "navbar-brand", to: "home" },
-                React.createElement("img", { src: "assets/images/pluralsight_logo.png", height: "40" })),
+            React.createElement(react_router_dom_1.Link, { className: "navbar-brand", to: "/home" },
+                React.createElement("img", { src: "/assets/images/pluralsight_logo.png", height: "40" })),
             React.createElement("button", { className: "navbar-toggler", type: "button", "data-toggle": "collapse", "data-target": "#navbarNav", "aria-controls": "navbarNav", "aria-expanded": "false", "aria-label": "Toggle navigation" },
                 React.createElement("span", { className: "navbar-toggler-icon" })),
             React.createElement("div", { className: "collapse navbar-collapse ml-3", id: "navbarNav" },
                 React.createElement("ul", { className: "navbar-nav" },
                     React.createElement("li", { className: "nav-item active mr-2" },
-                        React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "home" }, "Home")),
+                        React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/home" }, "Home")),
                     React.createElement("li", { className: "nav-item mr-2" },
-                        React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "about" }, "About")),
+                        React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/about" }, "About")),
                     React.createElement("li", { className: "nav-item mr-2" },
-                        React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "authors" }, "Authors"))))));
+                        React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/authors" }, "Authors"))))));
     };
     return NavLinks;
 }(React.Component));
@@ -1029,11 +1068,13 @@ var TextInput = (function (_super) {
         return _this;
     }
     TextInput.prototype.render = function () {
+        var _this = this;
+        this.inputState = ['valid'];
         if (this.props.error)
             this.inputState = ['has-error', 'invalid'];
         return (React.createElement("div", { className: 'form-group ' + this.inputState.join(' ') },
             React.createElement("label", { htmlFor: this.props.name }, this.props.label),
-            React.createElement("input", { type: "text", className: "form-control", name: this.props.name, ref: this.props.name, placeholder: this.props.placeholder, onChange: this.props.onChange, value: this.props.value }),
+            React.createElement("input", { type: "text", className: "form-control", name: this.props.name, ref: this.props.name, placeholder: this.props.placeholder, onChange: function (e) { return _this.props.onChange(e); }, value: this.props.value }),
             React.createElement("small", { className: "text-danger" }, this.props.error)));
     };
     return TextInput;
