@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "baseUrl" : "src",
+    "jsx": "react",
+    "outDir": "./dist/",
+    "removeComments": true,
+    "sourceMap": true,
+    "declaration": false,
+    "preserveConstEnums": true,
+    "sourceMap": true
+  },
+  "lib": [
+    "es2017",
+    "es6",
+    "es5",
+    "dom"
+  ],
+  "paths": {
+    "@app/*": ["./src/*"],
+  },
+  "include": [
+      "src/**/*"
+  ],
+  "exclude": [
+      "node_modules",
+      "**/*.spec.ts"
+  ]
+}
