@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { AuthorActions } from "../../actions/authorActions";
 
 export interface AuthorListProps {
     authors: Array<Object>;
@@ -20,6 +21,7 @@ export default class AuthorList extends React.Component<AuthorListProps, {}> {
           <Link to={"author/" + author.id} > {author.id}</Link>
         </td>
         <td>{author.firstName} {author.lastName}</td>
+        <td><a href="#" onClick={()=>AuthorActions.deleteAuthor(author)}>Delete</a></td>
       </tr>
     );
   }
@@ -33,6 +35,7 @@ export default class AuthorList extends React.Component<AuthorListProps, {}> {
             <tr>
               <th scope="col">ID</th>
               <th scope="col">Name</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>

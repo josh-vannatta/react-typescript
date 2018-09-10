@@ -445,9 +445,10 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.js");
-__webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+var InitializeActions_1 = __webpack_require__(/*! ./actions/InitializeActions */ "./src/flux/actions/InitializeActions.ts");
 var BrowserRouter_1 = __webpack_require__(/*! ./BrowserRouter */ "./src/flux/BrowserRouter.tsx");
+InitializeActions_1.InitializeActions.initApp();
 var FluxTutorial = (function (_super) {
     __extends(FluxTutorial, _super);
     function FluxTutorial() {
@@ -459,6 +460,81 @@ var FluxTutorial = (function (_super) {
     return FluxTutorial;
 }(React.Component));
 exports.FluxTutorial = FluxTutorial;
+
+
+/***/ }),
+
+/***/ "./src/flux/actions/InitializeActions.ts":
+/*!***********************************************!*\
+  !*** ./src/flux/actions/InitializeActions.ts ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var dispatcher_1 = __webpack_require__(/*! ../dispatcher */ "./src/flux/dispatcher/index.ts");
+var ActionTypes_1 = __webpack_require__(/*! ../constants/ActionTypes */ "./src/flux/constants/ActionTypes.ts");
+var AuthorApi_1 = __webpack_require__(/*! ../api/AuthorApi */ "./src/flux/api/AuthorApi.ts");
+var InitializeActions = (function () {
+    function InitializeActions() {
+    }
+    InitializeActions.initApp = function () {
+        dispatcher_1.dispatcher.dispatch({
+            actionType: ActionTypes_1.ActionTypes.INITIALIZE,
+            initialData: {
+                authors: AuthorApi_1.default.getAllAuthors()
+            }
+        });
+    };
+    return InitializeActions;
+}());
+exports.InitializeActions = InitializeActions;
+
+
+/***/ }),
+
+/***/ "./src/flux/actions/authorActions.ts":
+/*!*******************************************!*\
+  !*** ./src/flux/actions/authorActions.ts ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var dispatcher_1 = __webpack_require__(/*! ../dispatcher */ "./src/flux/dispatcher/index.ts");
+var ActionTypes_1 = __webpack_require__(/*! ../constants/ActionTypes */ "./src/flux/constants/ActionTypes.ts");
+var AuthorApi_1 = __webpack_require__(/*! ../api/AuthorApi */ "./src/flux/api/AuthorApi.ts");
+var AuthorActions = (function () {
+    function AuthorActions() {
+    }
+    AuthorActions.createAuthor = function (author) {
+        var newAuthor = AuthorApi_1.default.saveAuthor(author);
+        dispatcher_1.dispatcher.dispatch({
+            actionType: ActionTypes_1.ActionTypes.CREATE_AUTHOR,
+            author: newAuthor
+        });
+    };
+    AuthorActions.deleteAuthor = function (author) {
+        AuthorApi_1.default.deleteAuthor(author.id);
+        dispatcher_1.dispatcher.dispatch({
+            actionType: ActionTypes_1.ActionTypes.DELETE_AUTHOR,
+            author: author
+        });
+    };
+    AuthorActions.updateAuthor = function (author) {
+        var updatedAuthor = AuthorApi_1.default.saveAuthor(author);
+        dispatcher_1.dispatcher.dispatch({
+            actionType: ActionTypes_1.ActionTypes.UPDATE_AUTHOR,
+            author: updatedAuthor
+        });
+    };
+    return AuthorActions;
+}());
+exports.AuthorActions = AuthorActions;
 
 
 /***/ }),
@@ -750,6 +826,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+var authorActions_1 = __webpack_require__(/*! ../../actions/authorActions */ "./src/flux/actions/authorActions.ts");
 var AuthorList = (function (_super) {
     __extends(AuthorList, _super);
     function AuthorList() {
@@ -764,7 +841,9 @@ var AuthorList = (function (_super) {
             React.createElement("td", null,
                 author.firstName,
                 " ",
-                author.lastName)));
+                author.lastName),
+            React.createElement("td", null,
+                React.createElement("a", { href: "#", onClick: function () { return authorActions_1.AuthorActions.deleteAuthor(author); } }, "Delete"))));
     };
     AuthorList.prototype.render = function () {
         var _this = this;
@@ -774,7 +853,8 @@ var AuthorList = (function (_super) {
                 React.createElement("thead", null,
                     React.createElement("tr", null,
                         React.createElement("th", { scope: "col" }, "ID"),
-                        React.createElement("th", { scope: "col" }, "Name"))),
+                        React.createElement("th", { scope: "col" }, "Name"),
+                        React.createElement("th", { scope: "col" }))),
                 React.createElement("tbody", null, this.props.authors.map(function (author) { return _this.getAuthorRow(author); })))));
     };
     AuthorList.defaultProps = {
@@ -813,7 +893,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
-var AuthorApi_1 = __webpack_require__(/*! ../../api/AuthorApi */ "./src/flux/api/AuthorApi.ts");
+var AuthorStore_1 = __webpack_require__(/*! ../../stores/AuthorStore */ "./src/flux/stores/AuthorStore.ts");
 var AuthorList_1 = __webpack_require__(/*! ./AuthorList */ "./src/flux/components/authors/AuthorList.tsx");
 var Layout_1 = __webpack_require__(/*! ../common/Layout */ "./src/flux/components/common/Layout.tsx");
 var AuthorPage = (function (_super) {
@@ -821,13 +901,21 @@ var AuthorPage = (function (_super) {
     function AuthorPage() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.state = {
-            authors: []
+            authors: AuthorStore_1.authorStore.getAllAuthors()
         };
         return _this;
     }
-    AuthorPage.prototype.componentDidMount = function () {
+    AuthorPage.prototype.componentWillMount = function () {
+        var _this = this;
+        AuthorStore_1.authorStore.addChangeListener(function () { return _this.onChange(); });
+    };
+    AuthorPage.prototype.componentWillUnmount = function () {
+        var _this = this;
+        AuthorStore_1.authorStore.addChangeListener(function () { return _this.onChange(); });
+    };
+    AuthorPage.prototype.onChange = function () {
         this.setState({
-            authors: AuthorApi_1.default.getAllAuthors()
+            authors: AuthorStore_1.authorStore.getAllAuthors()
         });
     };
     AuthorPage.prototype.render = function () {
@@ -867,9 +955,10 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+var AuthorStore_1 = __webpack_require__(/*! ../../stores/AuthorStore */ "./src/flux/stores/AuthorStore.ts");
+var authorActions_1 = __webpack_require__(/*! ../../actions/authorActions */ "./src/flux/actions/authorActions.ts");
 var Layout_1 = __webpack_require__(/*! ../common/Layout */ "./src/flux/components/common/Layout.tsx");
 var AuthorForm_1 = __webpack_require__(/*! ./AuthorForm */ "./src/flux/components/authors/AuthorForm.tsx");
-var AuthorApi_1 = __webpack_require__(/*! ../../api/AuthorApi */ "./src/flux/api/AuthorApi.ts");
 var ManageAuthorsPage = (function (_super) {
     __extends(ManageAuthorsPage, _super);
     function ManageAuthorsPage(props) {
@@ -888,7 +977,7 @@ var ManageAuthorsPage = (function (_super) {
         };
         var activeAuthor = props.match.params.id;
         if (activeAuthor) {
-            activeAuthor = AuthorApi_1.default.getAuthorById(activeAuthor);
+            activeAuthor = AuthorStore_1.authorStore.getAuthorById(activeAuthor);
             _this.title = 'Edit author';
             _this.state.author = {
                 id: activeAuthor.id,
@@ -908,7 +997,10 @@ var ManageAuthorsPage = (function (_super) {
         e.preventDefault();
         if (!this.formValid())
             return;
-        AuthorApi_1.default.saveAuthor(this.state.author);
+        if (this.state.author.id)
+            authorActions_1.AuthorActions.updateAuthor(this.state.author);
+        else
+            authorActions_1.AuthorActions.createAuthor(this.state.author);
         this.setState({ authorSaved: true, dirty: false });
     };
     ManageAuthorsPage.prototype.formValid = function () {
@@ -1080,6 +1172,119 @@ var TextInput = (function (_super) {
     return TextInput;
 }(React.Component));
 exports.TextInput = TextInput;
+
+
+/***/ }),
+
+/***/ "./src/flux/constants/ActionTypes.ts":
+/*!*******************************************!*\
+  !*** ./src/flux/constants/ActionTypes.ts ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ActionTypes = {
+    CREATE_AUTHOR: 'CREATE_AUTHOR',
+    UPDATE_AUTHOR: 'UPDATE_AUTHOR',
+    DELETE_AUTHOR: 'DELETE_AUTHOR',
+    INITIALIZE: 'INITIALIZE',
+};
+
+
+/***/ }),
+
+/***/ "./src/flux/dispatcher/index.ts":
+/*!**************************************!*\
+  !*** ./src/flux/dispatcher/index.ts ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var flux_1 = __webpack_require__(/*! flux */ "./node_modules/flux/index.js");
+exports.dispatcher = new flux_1.Dispatcher();
+
+
+/***/ }),
+
+/***/ "./src/flux/stores/AuthorStore.ts":
+/*!****************************************!*\
+  !*** ./src/flux/stores/AuthorStore.ts ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var dispatcher_1 = __webpack_require__(/*! ../dispatcher */ "./src/flux/dispatcher/index.ts");
+var ActionTypes_1 = __webpack_require__(/*! ../constants/ActionTypes */ "./src/flux/constants/ActionTypes.ts");
+var events_1 = __webpack_require__(/*! events */ "./node_modules/events/events.js");
+var _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+var CHANGE_EVENT = 'change';
+var authors = [];
+var AuthorStore = (function (_super) {
+    __extends(AuthorStore, _super);
+    function AuthorStore() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    AuthorStore.prototype.emitChange = function () {
+        this.emit(CHANGE_EVENT);
+    };
+    AuthorStore.prototype.addChangeListener = function (callback) {
+        this.on(CHANGE_EVENT, callback);
+    };
+    AuthorStore.prototype.removeChangeListener = function (callback) {
+        this.removeListener(CHANGE_EVENT, callback);
+    };
+    AuthorStore.prototype.getAllAuthors = function () {
+        return authors;
+    };
+    AuthorStore.prototype.getAuthorById = function (id) {
+        return _.find(authors, { id: id });
+    };
+    return AuthorStore;
+}(events_1.EventEmitter));
+var authorStore = new AuthorStore();
+exports.authorStore = authorStore;
+dispatcher_1.dispatcher.register(function (action) {
+    var author;
+    switch (action.actionType) {
+        case ActionTypes_1.ActionTypes.CREATE_AUTHOR:
+            authors.push(action.author);
+            break;
+        case ActionTypes_1.ActionTypes.UPDATE_AUTHOR:
+            author = authorStore.getAuthorById(action.author.id);
+            authors.splice(authors.indexOf(author), 1, action.author);
+            break;
+        case ActionTypes_1.ActionTypes.DELETE_AUTHOR:
+            _.remove(authors, { id: action.author.id });
+            break;
+        case ActionTypes_1.ActionTypes.INITIALIZE:
+            authors = action.initialData.authors;
+            break;
+        default:
+    }
+    authorStore.emitChange();
+});
 
 
 /***/ }),

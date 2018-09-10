@@ -1,17 +1,26 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
-import AuthorApi from "../../api/AuthorApi";
+import { authorStore } from "../../stores/AuthorStore";
+
 import AuthorList from "./AuthorList";
 import { Layout } from "../common/Layout";
 
 export class AuthorPage extends React.Component {
   state = {
-    authors: []
+    authors: authorStore.getAllAuthors()
   }
 
-  public componentDidMount():void {
+  public componentWillMount() {
+    authorStore.addChangeListener(()=>this.onChange());
+  }
+
+  public componentWillUnmount() {
+    authorStore.addChangeListener(()=>this.onChange());
+  }
+
+  private onChange() {
     this.setState({
-      authors: AuthorApi.getAllAuthors()
+      authors: authorStore.getAllAuthors()
     })
   }
 

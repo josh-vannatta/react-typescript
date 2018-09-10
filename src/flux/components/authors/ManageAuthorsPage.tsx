@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { Redirect, Prompt } from 'react-router-dom';
+import { authorStore } from "../../stores/AuthorStore";
+import { AuthorActions } from "../../actions/authorActions";
+
 import { Layout } from '../common/Layout';
 import { AuthorForm } from "./AuthorForm";
-import AuthorApi from "../../api/AuthorApi";
 
 export class ManageAuthorsPage extends React.Component {
   private title = 'Create new author';
@@ -22,7 +24,7 @@ export class ManageAuthorsPage extends React.Component {
     super(props);
     let activeAuthor = props.match.params.id;
     if (activeAuthor) {
-      activeAuthor = AuthorApi.getAuthorById(activeAuthor);
+      activeAuthor = authorStore.getAuthorById(activeAuthor);
       this.title = 'Edit author';
       this.state.author = {
         id: activeAuthor.id,
@@ -41,7 +43,10 @@ export class ManageAuthorsPage extends React.Component {
   private onSaveAuthor(e: HTMLFormElement): void {
     e.preventDefault();
     if (!this.formValid()) return;
-    AuthorApi.saveAuthor(this.state.author);
+    if (this.state.author.id)
+      AuthorActions.updateAuthor(this.state.author);
+    else
+      AuthorActions.createAuthor(this.state.author);
     this.setState({ authorSaved: true, dirty: false });
   }
 
