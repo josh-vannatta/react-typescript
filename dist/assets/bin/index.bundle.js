@@ -163,55 +163,35 @@
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var Button = (function (_super) {
-    __extends(Button, _super);
-    function Button(props) {
-        return _super.call(this, props) || this;
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class Button extends React.Component {
+    constructor(props) {
+        super(props);
     }
-    Button.prototype.render = function () {
+    render() {
         return (React.createElement("button", { className: "foo", onClick: this.props.onClickFunction }, "Add one"));
-    };
-    return Button;
-}(React.Component));
-var Result = function (props) { return (React.createElement("div", null,
-    "n: ",
-    props.counter)); };
-var Counter = (function (_super) {
-    __extends(Counter, _super);
-    function Counter() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.state = { counter: 0 };
-        return _this;
     }
-    Counter.prototype.incrementCounter = function () {
-        var _this = this;
-        this.setState(function () { return ({
-            counter: _this.state.counter + 1
-        }); });
-    };
-    Counter.prototype.render = function () {
-        var _this = this;
+}
+const Result = (props) => (React.createElement("div", null,
+    "n: ",
+    props.counter));
+class Counter extends React.Component {
+    constructor() {
+        super(...arguments);
+        this.state = { counter: 0 };
+    }
+    incrementCounter() {
+        this.setState(() => ({
+            counter: this.state.counter + 1
+        }));
+    }
+    render() {
         return (React.createElement("div", null,
-            React.createElement(Button, { onClickFunction: function () { return _this.incrementCounter(); } }),
+            React.createElement(Button, { onClickFunction: () => this.incrementCounter() }),
             React.createElement(Result, { counter: this.state.counter })));
-    };
-    return Counter;
-}(React.Component));
+    }
+}
 exports.Counter = Counter;
 
 
@@ -226,97 +206,64 @@ exports.Counter = Counter;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-var Form = (function (_super) {
-    __extends(Form, _super);
-    function Form() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.state = {
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+let axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+class Form extends React.Component {
+    constructor() {
+        super(...arguments);
+        this.state = {
             userName: ''
         };
-        return _this;
     }
-    Form.prototype.handleSubmit = function (event) {
-        var _this = this;
+    handleSubmit(event) {
         event.preventDefault();
-        axios.get("https://api.github.com/users/" + this.state.userName)
-            .then(function (res) {
-            _this.props.onCardChange(res.data);
-            _this.setState({ userName: '' });
+        axios.get(`https://api.github.com/users/${this.state.userName}`)
+            .then(res => {
+            this.props.onCardChange(res.data);
+            this.setState({ userName: '' });
         });
-    };
-    Form.prototype.render = function () {
-        var _this = this;
-        return (React.createElement("form", { onSubmit: function (e) { return _this.handleSubmit(e); }, className: "my-4" },
+    }
+    render() {
+        return (React.createElement("form", { onSubmit: e => this.handleSubmit(e), className: "my-4" },
             React.createElement("div", { className: "row" },
                 React.createElement("div", { className: "form-group col-sm-9" },
-                    React.createElement("input", { type: "text", className: "form-control", placeholder: "Enter username", value: this.state.userName, onChange: function (e) { return _this.setState({ userName: e.target.value }); } })),
+                    React.createElement("input", { type: "text", className: "form-control", placeholder: "Enter username", value: this.state.userName, onChange: (e) => this.setState({ userName: e.target.value }) })),
                 React.createElement("div", { className: "col-sm-3 pl-0" },
                     React.createElement("button", { type: "submit", className: "btn btn-primary w-100" }, "Add card")))));
-    };
-    return Form;
-}(React.Component));
-var Card = function (props) {
+    }
+}
+const Card = (props) => {
     function handleClick() {
         window.open(props.html_url, '_blank');
     }
-    return (React.createElement("div", { className: "github-card z-depth-2 z-depth-hover my-3 p-3 pointer", onClick: function () { return handleClick(); } },
+    return (React.createElement("div", { className: "github-card z-depth-2 z-depth-hover my-3 p-3 pointer", onClick: () => handleClick() },
         React.createElement("img", { width: "100", src: props.avatar_url }),
         React.createElement("div", { className: "card-body" },
             React.createElement("h2", { style: { fontSize: '1.25em' } }, props.name),
             React.createElement("p", { style: { fontSize: '1em' } }, props.company))));
 };
-var CardList = function (props) {
-    return (React.createElement("div", { className: "card-list" }, props.cards.map(function (card) { return React.createElement(Card, __assign({}, card, { key: card.id })); })));
+const CardList = (props) => {
+    return (React.createElement("div", { className: "card-list" }, props.cards.map(card => React.createElement(Card, Object.assign({}, card, { key: card.id })))));
 };
-var GithubViewer = (function (_super) {
-    __extends(GithubViewer, _super);
-    function GithubViewer(props) {
-        var _this = _super.call(this, props) || this;
-        _this.state = {
+class GithubViewer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
             data: null
         };
-        return _this;
     }
-    GithubViewer.prototype.onCardChange = function (data) {
+    onCardChange(data) {
         this.setState({
             data: this.state.data.concat(data)
         });
-    };
-    GithubViewer.prototype.render = function () {
-        var _this = this;
+    }
+    render() {
         return (React.createElement("div", { className: "container" },
-            React.createElement(Form, { onCardChange: function (d) { return _this.onCardChange(d); } }),
+            React.createElement(Form, { onCardChange: d => this.onCardChange(d) }),
             React.createElement(CardList, { cards: this.state.data })));
-    };
-    return GithubViewer;
-}(React.Component));
+    }
+}
 exports.GithubViewer = GithubViewer;
 
 
@@ -331,35 +278,17 @@ exports.GithubViewer = GithubViewer;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var Hello = (function (_super) {
-    __extends(Hello, _super);
-    function Hello() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Hello.prototype.render = function () {
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class Hello extends React.Component {
+    render() {
         return (React.createElement("div", null,
             React.createElement("h1", null,
                 "Hello, ",
                 this.props.name),
             React.createElement("p", null, "The app is working!")));
-    };
-    return Hello;
-}(React.Component));
+    }
+}
 exports.Hello = Hello;
 
 
@@ -374,33 +303,16 @@ exports.Hello = Hello;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
-var HomePage_1 = __webpack_require__(/*! ./components/HomePage */ "./src/flux/components/HomePage.tsx");
-var AboutPage_1 = __webpack_require__(/*! ./components/about/AboutPage */ "./src/flux/components/about/AboutPage.tsx");
-var AuthorPage_1 = __webpack_require__(/*! ./components/authors/AuthorPage */ "./src/flux/components/authors/AuthorPage.tsx");
-var ManageAuthorsPage_1 = __webpack_require__(/*! ./components/authors/ManageAuthorsPage */ "./src/flux/components/authors/ManageAuthorsPage.tsx");
-var Error404_1 = __webpack_require__(/*! ./components/Error404 */ "./src/flux/components/Error404.tsx");
-var App = (function (_super) {
-    __extends(App, _super);
-    function App() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    App.prototype.render = function () {
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const HomePage_1 = __webpack_require__(/*! ./components/HomePage */ "./src/flux/components/HomePage.tsx");
+const AboutPage_1 = __webpack_require__(/*! ./components/about/AboutPage */ "./src/flux/components/about/AboutPage.tsx");
+const AuthorPage_1 = __webpack_require__(/*! ./components/authors/AuthorPage */ "./src/flux/components/authors/AuthorPage.tsx");
+const ManageAuthorsPage_1 = __webpack_require__(/*! ./components/authors/ManageAuthorsPage */ "./src/flux/components/authors/ManageAuthorsPage.tsx");
+const Error404_1 = __webpack_require__(/*! ./components/Error404 */ "./src/flux/components/Error404.tsx");
+class App extends React.Component {
+    render() {
         return (React.createElement(react_router_dom_1.BrowserRouter, null,
             React.createElement(react_router_dom_1.Switch, null,
                 React.createElement(react_router_dom_1.Route, { exact: true, path: "/", name: "home", component: HomePage_1.HomePage }),
@@ -412,9 +324,8 @@ var App = (function (_super) {
                 React.createElement(react_router_dom_1.Redirect, { from: "/about/*", to: "/about" }),
                 React.createElement(react_router_dom_1.Redirect, { from: "/home", to: "/" }),
                 React.createElement(react_router_dom_1.Route, { component: Error404_1.Error404 }))));
-    };
-    return App;
-}(React.Component));
+    }
+}
 exports.App = App;
 
 
@@ -429,36 +340,18 @@ exports.App = App;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.js");
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var InitializeActions_1 = __webpack_require__(/*! ./actions/InitializeActions */ "./src/flux/actions/InitializeActions.ts");
-var BrowserRouter_1 = __webpack_require__(/*! ./BrowserRouter */ "./src/flux/BrowserRouter.tsx");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const InitializeActions_1 = __webpack_require__(/*! ./actions/InitializeActions */ "./src/flux/actions/InitializeActions.ts");
+const BrowserRouter_1 = __webpack_require__(/*! ./BrowserRouter */ "./src/flux/BrowserRouter.tsx");
 InitializeActions_1.InitializeActions.initApp();
-var FluxTutorial = (function (_super) {
-    __extends(FluxTutorial, _super);
-    function FluxTutorial() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    FluxTutorial.prototype.render = function () {
+class FluxTutorial extends React.Component {
+    render() {
         return (React.createElement(BrowserRouter_1.App, null));
-    };
-    return FluxTutorial;
-}(React.Component));
+    }
+}
 exports.FluxTutorial = FluxTutorial;
 
 
@@ -474,22 +367,19 @@ exports.FluxTutorial = FluxTutorial;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var dispatcher_1 = __webpack_require__(/*! ../dispatcher */ "./src/flux/dispatcher/index.ts");
-var ActionTypes_1 = __webpack_require__(/*! ../constants/ActionTypes */ "./src/flux/constants/ActionTypes.ts");
-var AuthorApi_1 = __webpack_require__(/*! ../api/AuthorApi */ "./src/flux/api/AuthorApi.ts");
-var InitializeActions = (function () {
-    function InitializeActions() {
-    }
-    InitializeActions.initApp = function () {
+const dispatcher_1 = __webpack_require__(/*! ../dispatcher */ "./src/flux/dispatcher/index.ts");
+const ActionTypes_1 = __webpack_require__(/*! ../constants/ActionTypes */ "./src/flux/constants/ActionTypes.ts");
+const AuthorApi_1 = __webpack_require__(/*! ../api/AuthorApi */ "./src/flux/api/AuthorApi.ts");
+class InitializeActions {
+    static initApp() {
         dispatcher_1.dispatcher.dispatch({
             actionType: ActionTypes_1.ActionTypes.INITIALIZE,
             initialData: {
                 authors: AuthorApi_1.default.getAllAuthors()
             }
         });
-    };
-    return InitializeActions;
-}());
+    }
+}
 exports.InitializeActions = InitializeActions;
 
 
@@ -505,35 +395,32 @@ exports.InitializeActions = InitializeActions;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var dispatcher_1 = __webpack_require__(/*! ../dispatcher */ "./src/flux/dispatcher/index.ts");
-var ActionTypes_1 = __webpack_require__(/*! ../constants/ActionTypes */ "./src/flux/constants/ActionTypes.ts");
-var AuthorApi_1 = __webpack_require__(/*! ../api/AuthorApi */ "./src/flux/api/AuthorApi.ts");
-var AuthorActions = (function () {
-    function AuthorActions() {
-    }
-    AuthorActions.createAuthor = function (author) {
-        var newAuthor = AuthorApi_1.default.saveAuthor(author);
+const dispatcher_1 = __webpack_require__(/*! ../dispatcher */ "./src/flux/dispatcher/index.ts");
+const ActionTypes_1 = __webpack_require__(/*! ../constants/ActionTypes */ "./src/flux/constants/ActionTypes.ts");
+const AuthorApi_1 = __webpack_require__(/*! ../api/AuthorApi */ "./src/flux/api/AuthorApi.ts");
+class AuthorActions {
+    static createAuthor(author) {
+        let newAuthor = AuthorApi_1.default.saveAuthor(author);
         dispatcher_1.dispatcher.dispatch({
             actionType: ActionTypes_1.ActionTypes.CREATE_AUTHOR,
             author: newAuthor
         });
-    };
-    AuthorActions.deleteAuthor = function (author) {
+    }
+    static deleteAuthor(author) {
         AuthorApi_1.default.deleteAuthor(author.id);
         dispatcher_1.dispatcher.dispatch({
             actionType: ActionTypes_1.ActionTypes.DELETE_AUTHOR,
             author: author
         });
-    };
-    AuthorActions.updateAuthor = function (author) {
-        var updatedAuthor = AuthorApi_1.default.saveAuthor(author);
+    }
+    static updateAuthor(author) {
+        let updatedAuthor = AuthorApi_1.default.saveAuthor(author);
         dispatcher_1.dispatcher.dispatch({
             actionType: ActionTypes_1.ActionTypes.UPDATE_AUTHOR,
             author: updatedAuthor
         });
-    };
-    return AuthorActions;
-}());
+    }
+}
 exports.AuthorActions = AuthorActions;
 
 
@@ -549,22 +436,20 @@ exports.AuthorActions = AuthorActions;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-var authorData_1 = __webpack_require__(/*! ./authorData */ "./src/flux/api/authorData.ts");
-var authors = authorData_1.authorData.authors;
-var AuthorApi = (function () {
-    function AuthorApi() {
-    }
-    AuthorApi.getAllAuthors = function () {
+const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+const authorData_1 = __webpack_require__(/*! ./authorData */ "./src/flux/api/authorData.ts");
+let authors = authorData_1.authorData.authors;
+class AuthorApi {
+    static getAllAuthors() {
         return this.clone(authors);
-    };
-    AuthorApi.getAuthorById = function (id) {
-        var author = _.find(authors, { id: id });
+    }
+    static getAuthorById(id) {
+        let author = _.find(authors, { id: id });
         return this.clone(author);
-    };
-    AuthorApi.saveAuthor = function (author) {
+    }
+    static saveAuthor(author) {
         if (author.id) {
-            var existingAuthorIndex = _.indexOf(authors, _.find(authors, { id: author.id }));
+            let existingAuthorIndex = _.indexOf(authors, _.find(authors, { id: author.id }));
             authors.splice(existingAuthorIndex, 1, author);
         }
         else {
@@ -572,18 +457,17 @@ var AuthorApi = (function () {
             authors.push(author);
         }
         return this.clone(author);
-    };
-    AuthorApi.deleteAuthor = function (id) {
+    }
+    static deleteAuthor(id) {
         _.remove(authors, { id: id });
-    };
-    AuthorApi.generateId = function (author) {
+    }
+    static generateId(author) {
         return author.firstName.toLowerCase() + '-' + author.lastName.toLowerCase();
-    };
-    AuthorApi.clone = function (item) {
+    }
+    static clone(item) {
         return JSON.parse(JSON.stringify(item));
-    };
-    return AuthorApi;
-}());
+    }
+}
 exports.default = AuthorApi;
 
 
@@ -631,36 +515,18 @@ exports.authorData = {
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
-var Layout_1 = __webpack_require__(/*! ./common/Layout */ "./src/flux/components/common/Layout.tsx");
-var Error404 = (function (_super) {
-    __extends(Error404, _super);
-    function Error404() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Error404.prototype.render = function () {
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const Layout_1 = __webpack_require__(/*! ./common/Layout */ "./src/flux/components/common/Layout.tsx");
+class Error404 extends React.Component {
+    render() {
         return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
                 React.createElement("h1", null, "Uh oh! Page not found"),
                 React.createElement("p", null, "It looks like you made a wrong turn"),
                 React.createElement(react_router_dom_1.Link, { className: "btn btn-primary", to: "home" }, "Take me home")) }));
-    };
-    return Error404;
-}(React.Component));
+    }
+}
 exports.Error404 = Error404;
 
 
@@ -675,36 +541,18 @@ exports.Error404 = Error404;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
-var Layout_1 = __webpack_require__(/*! ./common/Layout */ "./src/flux/components/common/Layout.tsx");
-var HomePage = (function (_super) {
-    __extends(HomePage, _super);
-    function HomePage() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    HomePage.prototype.render = function () {
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const Layout_1 = __webpack_require__(/*! ./common/Layout */ "./src/flux/components/common/Layout.tsx");
+class HomePage extends React.Component {
+    render() {
         return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "jumbotron" },
                 React.createElement("h1", null, "Pluralsight Admin"),
                 React.createElement("p", null, "React, React router, Flux"),
                 React.createElement(react_router_dom_1.Link, { className: "btn btn-primary", to: "about" }, "Learn More")) }));
-    };
-    return HomePage;
-}(React.Component));
+    }
+}
 exports.HomePage = HomePage;
 
 
@@ -719,39 +567,23 @@ exports.HomePage = HomePage;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var Layout_1 = __webpack_require__(/*! ../common/Layout */ "./src/flux/components/common/Layout.tsx");
-var AboutPage = (function (_super) {
-    __extends(AboutPage, _super);
-    function AboutPage() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.techStack = [
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Layout_1 = __webpack_require__(/*! ../common/Layout */ "./src/flux/components/common/Layout.tsx");
+class AboutPage extends React.Component {
+    constructor() {
+        super(...arguments);
+        this.techStack = [
             'React', 'React Router', 'Flux', 'Node', 'Gulp', 'Browserify', 'Bootstrap'
         ];
-        return _this;
     }
-    AboutPage.prototype.render = function () {
+    render() {
         return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
                 React.createElement("h1", null, "About"),
                 React.createElement("p", null, "This page uses the following technologies:"),
-                React.createElement("ul", null, this.techStack.map(function (tech, i) { return React.createElement("li", { key: i }, tech); }))) }));
-    };
-    return AboutPage;
-}(React.Component));
+                React.createElement("ul", null, this.techStack.map((tech, i) => React.createElement("li", { key: i }, tech)))) }));
+    }
+}
 exports.AboutPage = AboutPage;
 
 
@@ -766,36 +598,21 @@ exports.AboutPage = AboutPage;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var TextInput_1 = __webpack_require__(/*! ../common/TextInput */ "./src/flux/components/common/TextInput.tsx");
-var AuthorForm = (function (_super) {
-    __extends(AuthorForm, _super);
-    function AuthorForm(props) {
-        return _super.call(this, props) || this;
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const TextInput_1 = __webpack_require__(/*! ../common/TextInput */ "./src/flux/components/common/TextInput.tsx");
+class AuthorForm extends React.Component {
+    constructor(props) {
+        super(props);
     }
-    AuthorForm.prototype.render = function () {
-        var errors = this.props.errors;
+    render() {
+        let errors = this.props.errors;
         return (React.createElement("form", { onSubmit: this.props.onSave },
             React.createElement(TextInput_1.TextInput, { name: "firstName", label: "First name", onChange: this.props.update, value: this.props.author.firstName, error: errors.firstName ? errors.firstName : false }),
             React.createElement(TextInput_1.TextInput, { name: "lastName", label: "Last name", onChange: this.props.update, error: errors.lastName ? errors.lastName : false, value: this.props.author.lastName }),
             React.createElement("button", { type: "submit", className: "btn btn-primary" }, "Submit")));
-    };
-    return AuthorForm;
-}(React.Component));
+    }
+}
 exports.AuthorForm = AuthorForm;
 
 
@@ -810,29 +627,12 @@ exports.AuthorForm = AuthorForm;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
-var authorActions_1 = __webpack_require__(/*! ../../actions/authorActions */ "./src/flux/actions/authorActions.ts");
-var AuthorList = (function (_super) {
-    __extends(AuthorList, _super);
-    function AuthorList() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    AuthorList.prototype.getAuthorRow = function (author) {
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const authorActions_1 = __webpack_require__(/*! ../../actions/authorActions */ "./src/flux/actions/authorActions.ts");
+class AuthorList extends React.Component {
+    getAuthorRow(author) {
         return (React.createElement("tr", { key: author.id },
             React.createElement("td", { scope: "row" },
                 React.createElement(react_router_dom_1.Link, { to: "author/" + author.id },
@@ -843,10 +643,9 @@ var AuthorList = (function (_super) {
                 " ",
                 author.lastName),
             React.createElement("td", null,
-                React.createElement("a", { href: "#", onClick: function () { return authorActions_1.AuthorActions.deleteAuthor(author); } }, "Delete"))));
-    };
-    AuthorList.prototype.render = function () {
-        var _this = this;
+                React.createElement("a", { href: "#", onClick: () => authorActions_1.AuthorActions.deleteAuthor(author) }, "Delete"))));
+    }
+    render() {
         return (React.createElement("div", null,
             React.createElement("h1", null, "Authors: "),
             React.createElement("table", { className: "table" },
@@ -855,14 +654,13 @@ var AuthorList = (function (_super) {
                         React.createElement("th", { scope: "col" }, "ID"),
                         React.createElement("th", { scope: "col" }, "Name"),
                         React.createElement("th", { scope: "col" }))),
-                React.createElement("tbody", null, this.props.authors.map(function (author) { return _this.getAuthorRow(author); })))));
-    };
-    AuthorList.defaultProps = {
-        authors: [],
-        category: "default"
-    };
-    return AuthorList;
-}(React.Component));
+                React.createElement("tbody", null, this.props.authors.map(author => this.getAuthorRow(author))))));
+    }
+}
+AuthorList.defaultProps = {
+    authors: [],
+    category: "default"
+};
 exports.default = AuthorList;
 
 
@@ -877,54 +675,36 @@ exports.default = AuthorList;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
-var AuthorStore_1 = __webpack_require__(/*! ../../stores/AuthorStore */ "./src/flux/stores/AuthorStore.ts");
-var AuthorList_1 = __webpack_require__(/*! ./AuthorList */ "./src/flux/components/authors/AuthorList.tsx");
-var Layout_1 = __webpack_require__(/*! ../common/Layout */ "./src/flux/components/common/Layout.tsx");
-var AuthorPage = (function (_super) {
-    __extends(AuthorPage, _super);
-    function AuthorPage() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.state = {
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const AuthorStore_1 = __webpack_require__(/*! ../../stores/AuthorStore */ "./src/flux/stores/AuthorStore.ts");
+const AuthorList_1 = __webpack_require__(/*! ./AuthorList */ "./src/flux/components/authors/AuthorList.tsx");
+const Layout_1 = __webpack_require__(/*! ../common/Layout */ "./src/flux/components/common/Layout.tsx");
+class AuthorPage extends React.Component {
+    constructor() {
+        super(...arguments);
+        this.state = {
             authors: AuthorStore_1.authorStore.getAllAuthors()
         };
-        return _this;
     }
-    AuthorPage.prototype.componentWillMount = function () {
-        var _this = this;
-        AuthorStore_1.authorStore.addChangeListener(function () { return _this.onChange(); });
-    };
-    AuthorPage.prototype.componentWillUnmount = function () {
-        var _this = this;
-        AuthorStore_1.authorStore.addChangeListener(function () { return _this.onChange(); });
-    };
-    AuthorPage.prototype.onChange = function () {
+    componentWillMount() {
+        AuthorStore_1.authorStore.addChangeListener(() => this.onChange());
+    }
+    componentWillUnmount() {
+        AuthorStore_1.authorStore.addChangeListener(() => this.onChange());
+    }
+    onChange() {
         this.setState({
             authors: AuthorStore_1.authorStore.getAllAuthors()
         });
-    };
-    AuthorPage.prototype.render = function () {
+    }
+    render() {
         return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
                 React.createElement(AuthorList_1.default, { authors: this.state.authors }),
                 React.createElement(react_router_dom_1.Link, { className: "btn btn-primary", to: "add-author" }, " Add new author")) }));
-    };
-    return AuthorPage;
-}(React.Component));
+    }
+}
 exports.AuthorPage = AuthorPage;
 
 
@@ -939,32 +719,18 @@ exports.AuthorPage = AuthorPage;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
-var AuthorStore_1 = __webpack_require__(/*! ../../stores/AuthorStore */ "./src/flux/stores/AuthorStore.ts");
-var authorActions_1 = __webpack_require__(/*! ../../actions/authorActions */ "./src/flux/actions/authorActions.ts");
-var Layout_1 = __webpack_require__(/*! ../common/Layout */ "./src/flux/components/common/Layout.tsx");
-var AuthorForm_1 = __webpack_require__(/*! ./AuthorForm */ "./src/flux/components/authors/AuthorForm.tsx");
-var ManageAuthorsPage = (function (_super) {
-    __extends(ManageAuthorsPage, _super);
-    function ManageAuthorsPage(props) {
-        var _this = _super.call(this, props) || this;
-        _this.title = 'Create new author';
-        _this.state = {
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const AuthorStore_1 = __webpack_require__(/*! ../../stores/AuthorStore */ "./src/flux/stores/AuthorStore.ts");
+const authorActions_1 = __webpack_require__(/*! ../../actions/authorActions */ "./src/flux/actions/authorActions.ts");
+const Layout_1 = __webpack_require__(/*! ../common/Layout */ "./src/flux/components/common/Layout.tsx");
+const AuthorForm_1 = __webpack_require__(/*! ./AuthorForm */ "./src/flux/components/authors/AuthorForm.tsx");
+class ManageAuthorsPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.title = 'Create new author';
+        this.state = {
             author: {
                 id: '',
                 firstName: '',
@@ -975,25 +741,24 @@ var ManageAuthorsPage = (function (_super) {
             invalid: false,
             errors: {}
         };
-        var activeAuthor = props.match.params.id;
+        let activeAuthor = props.match.params.id;
         if (activeAuthor) {
             activeAuthor = AuthorStore_1.authorStore.getAuthorById(activeAuthor);
-            _this.title = 'Edit author';
-            _this.state.author = {
+            this.title = 'Edit author';
+            this.state.author = {
                 id: activeAuthor.id,
                 firstName: activeAuthor.firstName,
                 lastName: activeAuthor.lastName
             };
         }
-        return _this;
     }
-    ManageAuthorsPage.prototype.updateAuthor = function (e) {
+    updateAuthor(e) {
         this.state.author[e.target.name] = e.target.value;
         this.setState({ author: this.state.author, dirty: true });
         if (this.state.invalid)
             this.formValid();
-    };
-    ManageAuthorsPage.prototype.onSaveAuthor = function (e) {
+    }
+    onSaveAuthor(e) {
         e.preventDefault();
         if (!this.formValid())
             return;
@@ -1002,8 +767,8 @@ var ManageAuthorsPage = (function (_super) {
         else
             authorActions_1.AuthorActions.createAuthor(this.state.author);
         this.setState({ authorSaved: true, dirty: false });
-    };
-    ManageAuthorsPage.prototype.formValid = function () {
+    }
+    formValid() {
         this.state.errors = {};
         if (this.state.author.firstName.length < 3) {
             this.state.errors['firstName'] = 'First name must be at least 3 characters';
@@ -1013,22 +778,20 @@ var ManageAuthorsPage = (function (_super) {
         }
         this.setState({ errors: this.state.errors, invalid: true });
         return Object.keys(this.state.errors).length == 0;
-    };
-    ManageAuthorsPage.prototype.render = function () {
-        var _this = this;
+    }
+    render() {
         if (this.state.authorSaved)
             return React.createElement(react_router_dom_1.Redirect, { to: "/authors" });
         return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
-                React.createElement(react_router_dom_1.Prompt, { when: this.state.dirty, message: function () { return 'Leave page and lose your progress?'; } }),
+                React.createElement(react_router_dom_1.Prompt, { when: this.state.dirty, message: () => 'Leave page and lose your progress?' }),
                 React.createElement("h1", null, this.title),
-                React.createElement(AuthorForm_1.AuthorForm, { author: this.state.author, update: function (e) { return _this.updateAuthor(e); }, onSave: function (e) { return _this.onSaveAuthor(e); }, errors: this.state.errors }),
+                React.createElement(AuthorForm_1.AuthorForm, { author: this.state.author, update: e => this.updateAuthor(e), onSave: e => this.onSaveAuthor(e), errors: this.state.errors }),
                 React.createElement("p", { className: "mt-3" },
                     this.state.author.firstName,
                     " \u00A0",
                     this.state.author.lastName)) }));
-    };
-    return ManageAuthorsPage;
-}(React.Component));
+    }
+}
 exports.ManageAuthorsPage = ManageAuthorsPage;
 
 
@@ -1043,34 +806,19 @@ exports.ManageAuthorsPage = ManageAuthorsPage;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var NavLinks_1 = __webpack_require__(/*! ./NavLinks */ "./src/flux/components/common/NavLinks.tsx");
-var Layout = (function (_super) {
-    __extends(Layout, _super);
-    function Layout(props) {
-        return _super.call(this, props) || this;
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const NavLinks_1 = __webpack_require__(/*! ./NavLinks */ "./src/flux/components/common/NavLinks.tsx");
+class Layout extends React.Component {
+    constructor(props) {
+        super(props);
     }
-    Layout.prototype.render = function () {
+    render() {
         return (React.createElement("div", { className: "app-container" },
             React.createElement(NavLinks_1.NavLinks, null),
             this.props.body));
-    };
-    return Layout;
-}(React.Component));
+    }
+}
 exports.Layout = Layout;
 
 
@@ -1085,28 +833,11 @@ exports.Layout = Layout;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
-var NavLinks = (function (_super) {
-    __extends(NavLinks, _super);
-    function NavLinks() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    NavLinks.prototype.render = function () {
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+class NavLinks extends React.Component {
+    render() {
         return (React.createElement("nav", { className: "navbar  navbar-expand-sm navbar-light bg-light z-depth-1" },
             React.createElement(react_router_dom_1.Link, { className: "navbar-brand", to: "/home" },
                 React.createElement("img", { src: "/assets/images/pluralsight_logo.png", height: "40" })),
@@ -1120,9 +851,8 @@ var NavLinks = (function (_super) {
                         React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/about" }, "About")),
                     React.createElement("li", { className: "nav-item mr-2" },
                         React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/authors" }, "Authors"))))));
-    };
-    return NavLinks;
-}(React.Component));
+    }
+}
 exports.NavLinks = NavLinks;
 
 
@@ -1137,40 +867,23 @@ exports.NavLinks = NavLinks;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var TextInput = (function (_super) {
-    __extends(TextInput, _super);
-    function TextInput(props) {
-        var _this = _super.call(this, props) || this;
-        _this.inputState = ['valid'];
-        return _this;
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class TextInput extends React.Component {
+    constructor(props) {
+        super(props);
+        this.inputState = ['valid'];
     }
-    TextInput.prototype.render = function () {
-        var _this = this;
+    render() {
         this.inputState = ['valid'];
         if (this.props.error)
             this.inputState = ['has-error', 'invalid'];
         return (React.createElement("div", { className: 'form-group ' + this.inputState.join(' ') },
             React.createElement("label", { htmlFor: this.props.name }, this.props.label),
-            React.createElement("input", { type: "text", className: "form-control", name: this.props.name, ref: this.props.name, placeholder: this.props.placeholder, onChange: function (e) { return _this.props.onChange(e); }, value: this.props.value }),
+            React.createElement("input", { type: "text", className: "form-control", name: this.props.name, ref: this.props.name, placeholder: this.props.placeholder, onChange: (e) => this.props.onChange(e), value: this.props.value }),
             React.createElement("small", { className: "text-danger" }, this.props.error)));
-    };
-    return TextInput;
-}(React.Component));
+    }
+}
 exports.TextInput = TextInput;
 
 
@@ -1206,7 +919,7 @@ exports.ActionTypes = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var flux_1 = __webpack_require__(/*! flux */ "./node_modules/flux/index.js");
+const flux_1 = __webpack_require__(/*! flux */ "./node_modules/flux/index.js");
 exports.dispatcher = new flux_1.Dispatcher();
 
 
@@ -1221,52 +934,34 @@ exports.dispatcher = new flux_1.Dispatcher();
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var dispatcher_1 = __webpack_require__(/*! ../dispatcher */ "./src/flux/dispatcher/index.ts");
-var ActionTypes_1 = __webpack_require__(/*! ../constants/ActionTypes */ "./src/flux/constants/ActionTypes.ts");
-var events_1 = __webpack_require__(/*! events */ "./node_modules/events/events.js");
-var _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-var CHANGE_EVENT = 'change';
-var authors = [];
-var AuthorStore = (function (_super) {
-    __extends(AuthorStore, _super);
-    function AuthorStore() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    AuthorStore.prototype.emitChange = function () {
+const dispatcher_1 = __webpack_require__(/*! ../dispatcher */ "./src/flux/dispatcher/index.ts");
+const ActionTypes_1 = __webpack_require__(/*! ../constants/ActionTypes */ "./src/flux/constants/ActionTypes.ts");
+const events_1 = __webpack_require__(/*! events */ "./node_modules/events/events.js");
+const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+let CHANGE_EVENT = 'change';
+let authors = [];
+class AuthorStore extends events_1.EventEmitter {
+    emitChange() {
         this.emit(CHANGE_EVENT);
-    };
-    AuthorStore.prototype.addChangeListener = function (callback) {
+    }
+    addChangeListener(callback) {
         this.on(CHANGE_EVENT, callback);
-    };
-    AuthorStore.prototype.removeChangeListener = function (callback) {
+    }
+    removeChangeListener(callback) {
         this.removeListener(CHANGE_EVENT, callback);
-    };
-    AuthorStore.prototype.getAllAuthors = function () {
+    }
+    getAllAuthors() {
         return authors;
-    };
-    AuthorStore.prototype.getAuthorById = function (id) {
+    }
+    getAuthorById(id) {
         return _.find(authors, { id: id });
-    };
-    return AuthorStore;
-}(events_1.EventEmitter));
-var authorStore = new AuthorStore();
+    }
+}
+let authorStore = new AuthorStore();
 exports.authorStore = authorStore;
-dispatcher_1.dispatcher.register(function (action) {
-    var author;
+dispatcher_1.dispatcher.register((action) => {
+    let author;
     switch (action.actionType) {
         case ActionTypes_1.ActionTypes.CREATE_AUTHOR:
             authors.push(action.author);
@@ -1299,14 +994,16 @@ dispatcher_1.dispatcher.register(function (action) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var ReactDOM = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-var Hello_1 = __webpack_require__(/*! ./basic/Hello */ "./src/basic/Hello.tsx");
-var Counter_1 = __webpack_require__(/*! ./basic/Counter */ "./src/basic/Counter.tsx");
-var GithubViewer_1 = __webpack_require__(/*! ./basic/GithubViewer */ "./src/basic/GithubViewer.tsx");
-var Flux_1 = __webpack_require__(/*! ./flux/Flux */ "./src/flux/Flux.tsx");
-var mountNode = document.getElementById("app");
-var activeExample = 'Flux';
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ReactDOM = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+const Hello_1 = __webpack_require__(/*! ./basic/Hello */ "./src/basic/Hello.tsx");
+const Counter_1 = __webpack_require__(/*! ./basic/Counter */ "./src/basic/Counter.tsx");
+const GithubViewer_1 = __webpack_require__(/*! ./basic/GithubViewer */ "./src/basic/GithubViewer.tsx");
+const Flux_1 = __webpack_require__(/*! ./flux/Flux */ "./src/flux/Flux.tsx");
+const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+const Redux_1 = __webpack_require__(/*! ./redux/Redux */ "./src/redux/Redux.tsx");
+let mountNode = document.getElementById("app");
+let activeExample = 'Redux';
 switch (activeExample) {
     case 'Hello':
         ReactDOM.render(React.createElement(Hello_1.Hello, { name: "Josh" }), mountNode);
@@ -1320,7 +1017,823 @@ switch (activeExample) {
     case 'Flux':
         ReactDOM.render(React.createElement(Flux_1.FluxTutorial, null), mountNode);
         break;
+    case 'Redux':
+        ReactDOM.render(React.createElement(react_redux_1.Provider, { store: Redux_1.store },
+            React.createElement(Redux_1.ReduxTutorial, null)), mountNode);
+        break;
 }
+
+
+/***/ }),
+
+/***/ "./src/redux/BrowserRouter.tsx":
+/*!*************************************!*\
+  !*** ./src/redux/BrowserRouter.tsx ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const HomePage_1 = __webpack_require__(/*! ./app/HomePage */ "./src/redux/app/HomePage.tsx");
+const AboutPage_1 = __webpack_require__(/*! ./app/about/AboutPage */ "./src/redux/app/about/AboutPage.tsx");
+const AuthorPage_1 = __webpack_require__(/*! ./app/authors/components/AuthorPage */ "./src/redux/app/authors/components/AuthorPage.tsx");
+const ManageAuthorsPage_1 = __webpack_require__(/*! ./app/authors/components/ManageAuthorsPage */ "./src/redux/app/authors/components/ManageAuthorsPage.tsx");
+const Error404_1 = __webpack_require__(/*! ./app/Error404 */ "./src/redux/app/Error404.tsx");
+const CoursesPage_1 = __webpack_require__(/*! ./app/courses/components/CoursesPage */ "./src/redux/app/courses/components/CoursesPage.tsx");
+class App extends React.Component {
+    render() {
+        return (React.createElement(react_router_dom_1.BrowserRouter, null,
+            React.createElement(react_router_dom_1.Switch, null,
+                React.createElement(react_router_dom_1.Route, { exact: true, path: "/", name: "home", component: HomePage_1.HomePage }),
+                React.createElement(react_router_dom_1.Route, { name: "about", path: "/about", component: AboutPage_1.AboutPage }),
+                React.createElement(react_router_dom_1.Route, { name: "authors", path: "/authors", component: AuthorPage_1.AuthorPage }),
+                React.createElement(react_router_dom_1.Route, { name: "add-author", path: "/add-author", component: ManageAuthorsPage_1.ManageAuthorsPage }),
+                React.createElement(react_router_dom_1.Route, { name: "manage-author", path: "/author/:id", component: ManageAuthorsPage_1.ManageAuthorsPage }),
+                React.createElement(react_router_dom_1.Route, { name: "courses", path: "/courses", component: CoursesPage_1.CoursesPage }),
+                React.createElement(react_router_dom_1.Redirect, { from: "/aboot", to: "/about" }),
+                React.createElement(react_router_dom_1.Redirect, { from: "/about/*", to: "/about" }),
+                React.createElement(react_router_dom_1.Redirect, { from: "/home", to: "/" }),
+                React.createElement(react_router_dom_1.Route, { component: Error404_1.Error404 }))));
+    }
+}
+exports.App = App;
+
+
+/***/ }),
+
+/***/ "./src/redux/Redux.tsx":
+/*!*****************************!*\
+  !*** ./src/redux/Redux.tsx ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+__webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.js");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const redux_1 = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+const AuthorApi_1 = __webpack_require__(/*! ./api/AuthorApi */ "./src/redux/api/AuthorApi.ts");
+const reducers_1 = __webpack_require__(/*! ./app/reducers */ "./src/redux/app/reducers.ts");
+const store = redux_1.createStore(reducers_1.default, {
+    courses: [],
+    authors: AuthorApi_1.default.getAllAuthors()
+});
+exports.store = store;
+const BrowserRouter_1 = __webpack_require__(/*! ./BrowserRouter */ "./src/redux/BrowserRouter.tsx");
+class ReduxTutorial extends React.Component {
+    render() {
+        return (React.createElement(BrowserRouter_1.App, null));
+    }
+}
+exports.ReduxTutorial = ReduxTutorial;
+
+
+/***/ }),
+
+/***/ "./src/redux/api/AuthorApi.ts":
+/*!************************************!*\
+  !*** ./src/redux/api/AuthorApi.ts ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+const authorData_1 = __webpack_require__(/*! ./authorData */ "./src/redux/api/authorData.ts");
+let authors = authorData_1.authorData.authors;
+class AuthorApi {
+    static getAllAuthors() {
+        return this.clone(authors);
+    }
+    static getAuthorById(id) {
+        let author = _.find(authors, { id: id });
+        return this.clone(author);
+    }
+    static saveAuthor(author) {
+        author.id = this.generateId(author);
+        authors.push(author);
+        return this.clone(author);
+    }
+    static updateAuthor(author) {
+        let existingAuthorIndex = _.indexOf(authors, _.find(authors, { id: author.id }));
+        authors.splice(existingAuthorIndex, 1, author);
+        return this.clone(author);
+    }
+    static deleteAuthor(id) {
+        _.remove(authors, { id: id });
+    }
+    static generateId(author) {
+        return author.firstName.toLowerCase() + '-' + author.lastName.toLowerCase();
+    }
+    static clone(item) {
+        return JSON.parse(JSON.stringify(item));
+    }
+}
+exports.default = AuthorApi;
+
+
+/***/ }),
+
+/***/ "./src/redux/api/authorData.ts":
+/*!*************************************!*\
+  !*** ./src/redux/api/authorData.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.authorData = {
+    authors: [
+        {
+            id: 'cory-house',
+            firstName: 'Cory',
+            lastName: 'House'
+        },
+        {
+            id: 'scott-allen',
+            firstName: 'Scott',
+            lastName: 'Allen'
+        },
+        {
+            id: 'dan-wahlin',
+            firstName: 'Dan',
+            lastName: 'Wahlin'
+        }
+    ]
+};
+
+
+/***/ }),
+
+/***/ "./src/redux/app/Error404.tsx":
+/*!************************************!*\
+  !*** ./src/redux/app/Error404.tsx ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const Layout_1 = __webpack_require__(/*! ./common/Layout */ "./src/redux/app/common/Layout.tsx");
+class Error404 extends React.Component {
+    render() {
+        return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
+                React.createElement("h1", null, "Uh oh! Page not found"),
+                React.createElement("p", null, "It looks like you made a wrong turn"),
+                React.createElement(react_router_dom_1.Link, { className: "btn btn-primary", to: "home" }, "Take me home")) }));
+    }
+}
+exports.Error404 = Error404;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/HomePage.tsx":
+/*!************************************!*\
+  !*** ./src/redux/app/HomePage.tsx ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const Layout_1 = __webpack_require__(/*! ./common/Layout */ "./src/redux/app/common/Layout.tsx");
+class HomePage extends React.Component {
+    render() {
+        return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "jumbotron" },
+                React.createElement("h1", null, "Pluralsight Admin"),
+                React.createElement("p", null, "React, React router, Flux"),
+                React.createElement(react_router_dom_1.Link, { className: "btn btn-primary", to: "about" }, "Learn More")) }));
+    }
+}
+exports.HomePage = HomePage;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/about/AboutPage.tsx":
+/*!*******************************************!*\
+  !*** ./src/redux/app/about/AboutPage.tsx ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Layout_1 = __webpack_require__(/*! ../common/Layout */ "./src/redux/app/common/Layout.tsx");
+class AboutPage extends React.Component {
+    constructor() {
+        super(...arguments);
+        this.techStack = [
+            'React', 'React Router', 'Flux', 'Node', 'Gulp', 'Browserify', 'Bootstrap'
+        ];
+    }
+    render() {
+        return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
+                React.createElement("h1", null, "About"),
+                React.createElement("p", null, "This page uses the following technologies:"),
+                React.createElement("ul", null, this.techStack.map((tech, i) => React.createElement("li", { key: i }, tech)))) }));
+    }
+}
+exports.AboutPage = AboutPage;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/authors/AuthorActions.ts":
+/*!************************************************!*\
+  !*** ./src/redux/app/authors/AuthorActions.ts ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const ActionTypes_1 = __webpack_require__(/*! ../../constants/ActionTypes */ "./src/redux/constants/ActionTypes.ts");
+const AuthorApi_1 = __webpack_require__(/*! ../../api/AuthorApi */ "./src/redux/api/AuthorApi.ts");
+const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+class AuthorActions {
+    static getAuthorById(authors, id) {
+        return _.find(authors, { id: id });
+    }
+    createAuthor(author) {
+        return {
+            type: ActionTypes_1.ActionTypes.CREATE_AUTHOR,
+            author: AuthorApi_1.default.saveAuthor(author)
+        };
+    }
+    deleteAuthor(author) {
+        AuthorApi_1.default.deleteAuthor(author.id);
+        return {
+            type: ActionTypes_1.ActionTypes.DELETE_AUTHOR,
+            author: author
+        };
+    }
+    updateAuthor(author) {
+        return {
+            type: ActionTypes_1.ActionTypes.UPDATE_AUTHOR,
+            author: AuthorApi_1.default.updateAuthor(author)
+        };
+    }
+}
+exports.AuthorActions = AuthorActions;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/authors/authorsReducer.ts":
+/*!*************************************************!*\
+  !*** ./src/redux/app/authors/authorsReducer.ts ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const ActionTypes_1 = __webpack_require__(/*! ../../constants/ActionTypes */ "./src/redux/constants/ActionTypes.ts");
+const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+class AuthorsReducer {
+    static createAuthor(authors, action) {
+        return [...authors, Object.assign({}, action.author)];
+    }
+    static updateAuthor(authors, action) {
+        let author = _.find(authors, { id: action.author.id });
+        authors.splice(authors.indexOf(author), 1, action.author);
+        return authors;
+    }
+    static deleteAuthor(authors, action) {
+        _.remove(authors, { id: action.author.id });
+        return authors;
+    }
+}
+function authorsReducer(authors = [], action) {
+    switch (action.type) {
+        case ActionTypes_1.ActionTypes.CREATE_AUTHOR:
+            return AuthorsReducer.createAuthor(authors, action);
+        case ActionTypes_1.ActionTypes.UPDATE_AUTHOR:
+            return AuthorsReducer.updateAuthor(authors, action);
+        case ActionTypes_1.ActionTypes.DELETE_AUTHOR:
+            return AuthorsReducer.deleteAuthor(authors, action);
+        default: return authors;
+    }
+}
+exports.authorsReducer = authorsReducer;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/authors/components/AuthorForm.tsx":
+/*!*********************************************************!*\
+  !*** ./src/redux/app/authors/components/AuthorForm.tsx ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const TextInput_1 = __webpack_require__(/*! ../../common/TextInput */ "./src/redux/app/common/TextInput.tsx");
+class AuthorForm extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let errors = this.props.errors;
+        return (React.createElement("form", { onSubmit: this.props.onSave },
+            React.createElement(TextInput_1.TextInput, { name: "firstName", label: "First name", onChange: this.props.update, value: this.props.author.firstName, error: errors.firstName ? errors.firstName : false }),
+            React.createElement(TextInput_1.TextInput, { name: "lastName", label: "Last name", onChange: this.props.update, error: errors.lastName ? errors.lastName : false, value: this.props.author.lastName }),
+            React.createElement("button", { type: "submit", className: "btn btn-primary" }, "Submit")));
+    }
+}
+exports.AuthorForm = AuthorForm;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/authors/components/AuthorList.tsx":
+/*!*********************************************************!*\
+  !*** ./src/redux/app/authors/components/AuthorList.tsx ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+class AuthorList extends React.Component {
+    getAuthorRow(author) {
+        return (React.createElement("tr", { key: author.id },
+            React.createElement("td", { scope: "row" },
+                React.createElement(react_router_dom_1.Link, { to: "author/" + author.id },
+                    " ",
+                    author.id)),
+            React.createElement("td", null,
+                author.firstName,
+                " ",
+                author.lastName),
+            React.createElement("td", null,
+                React.createElement("a", { href: "#", onClick: () => this.props.delete(author) }, "Delete"))));
+    }
+    render() {
+        return (React.createElement("div", null,
+            React.createElement("h1", null, "Authors: "),
+            React.createElement("table", { className: "table" },
+                React.createElement("thead", null,
+                    React.createElement("tr", null,
+                        React.createElement("th", { scope: "col" }, "ID"),
+                        React.createElement("th", { scope: "col" }, "Name"),
+                        React.createElement("th", { scope: "col" }))),
+                React.createElement("tbody", null, this.props.authors.map(author => this.getAuthorRow(author))))));
+    }
+}
+AuthorList.defaultProps = {
+    authors: [],
+    category: "default"
+};
+exports.AuthorList = AuthorList;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/authors/components/AuthorPage.tsx":
+/*!*********************************************************!*\
+  !*** ./src/redux/app/authors/components/AuthorPage.tsx ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const AuthorList_1 = __webpack_require__(/*! ./AuthorList */ "./src/redux/app/authors/components/AuthorList.tsx");
+const AuthorActions_1 = __webpack_require__(/*! ../AuthorActions */ "./src/redux/app/authors/AuthorActions.ts");
+const Layout_1 = __webpack_require__(/*! ../../common/Layout */ "./src/redux/app/common/Layout.tsx");
+const dispatcher_1 = __webpack_require__(/*! ../../dispatcher */ "./src/redux/app/dispatcher.ts");
+class AuthorPageRef extends React.Component {
+    render() {
+        return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
+                React.createElement(AuthorList_1.AuthorList, { authors: this.props.authors, delete: author => this.props.actions.deleteAuthor(author) }),
+                React.createElement(react_router_dom_1.Link, { className: "btn btn-primary", to: "add-author" }, " Add new author")) }));
+    }
+}
+exports.AuthorPage = dispatcher_1.dispatch(AuthorPageRef, {
+    actions: AuthorActions_1.AuthorActions, state: ['authors']
+});
+
+
+/***/ }),
+
+/***/ "./src/redux/app/authors/components/ManageAuthorsPage.tsx":
+/*!****************************************************************!*\
+  !*** ./src/redux/app/authors/components/ManageAuthorsPage.tsx ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const Layout_1 = __webpack_require__(/*! ../../common/Layout */ "./src/redux/app/common/Layout.tsx");
+const AuthorActions_1 = __webpack_require__(/*! ../AuthorActions */ "./src/redux/app/authors/AuthorActions.ts");
+const AuthorForm_1 = __webpack_require__(/*! ./AuthorForm */ "./src/redux/app/authors/components/AuthorForm.tsx");
+const dispatcher_1 = __webpack_require__(/*! ../../dispatcher */ "./src/redux/app/dispatcher.ts");
+class ManageAuthorsPageRef extends React.Component {
+    constructor(props) {
+        super(props);
+        this.title = 'Create new author';
+        this.state = {
+            author: {
+                id: '',
+                firstName: '',
+                lastName: ''
+            },
+            authorSaved: false,
+            dirty: false,
+            invalid: false,
+            errors: {}
+        };
+        if (props.match.params.id) {
+            let activeAuthor = AuthorActions_1.AuthorActions.getAuthorById(this.props.authors, props.match.params.id);
+            this.title = 'Edit author';
+            this.state.author = activeAuthor;
+        }
+    }
+    updateAuthor(e) {
+        this.state.author[e.target.name] = e.target.value;
+        this.setState({ author: this.state.author, dirty: true });
+        if (this.state.invalid)
+            this.formValid();
+    }
+    onSaveAuthor(e) {
+        e.preventDefault();
+        if (!this.formValid())
+            return;
+        if (this.state.author.id)
+            this.props.actions.updateAuthor(this.state.author);
+        else
+            this.props.actions.createAuthor(this.state.author);
+        this.setState({ authorSaved: true, dirty: false });
+    }
+    formValid() {
+        this.state.errors = {};
+        if (this.state.author.firstName.length < 3) {
+            this.state.errors['firstName'] = 'First name must be at least 3 characters';
+        }
+        if (this.state.author.lastName.length < 3) {
+            this.state.errors['lastName'] = 'Last name must be at least 3 characters';
+        }
+        this.setState({ errors: this.state.errors, invalid: true });
+        return Object.keys(this.state.errors).length == 0;
+    }
+    render() {
+        if (this.state.authorSaved)
+            return React.createElement(react_router_dom_1.Redirect, { to: "/authors" });
+        return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
+                React.createElement(react_router_dom_1.Prompt, { when: this.state.dirty, message: () => 'Leave page and lose your progress?' }),
+                React.createElement("h1", null, this.title),
+                React.createElement(AuthorForm_1.AuthorForm, { author: this.state.author, update: e => this.updateAuthor(e), onSave: e => this.onSaveAuthor(e), errors: this.state.errors }),
+                React.createElement("p", { className: "mt-3" },
+                    this.state.author.firstName,
+                    " \u00A0",
+                    this.state.author.lastName)) }));
+    }
+}
+exports.ManageAuthorsPageRef = ManageAuthorsPageRef;
+exports.ManageAuthorsPage = dispatcher_1.dispatch(ManageAuthorsPageRef, {
+    actions: AuthorActions_1.AuthorActions, state: ['authors']
+});
+
+
+/***/ }),
+
+/***/ "./src/redux/app/common/Layout.tsx":
+/*!*****************************************!*\
+  !*** ./src/redux/app/common/Layout.tsx ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const NavLinks_1 = __webpack_require__(/*! ./NavLinks */ "./src/redux/app/common/NavLinks.tsx");
+class Layout extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return (React.createElement("div", { className: "app-container" },
+            React.createElement(NavLinks_1.NavLinks, null),
+            this.props.body));
+    }
+}
+exports.Layout = Layout;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/common/NavLinks.tsx":
+/*!*******************************************!*\
+  !*** ./src/redux/app/common/NavLinks.tsx ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+class NavLinks extends React.Component {
+    render() {
+        return (React.createElement("nav", { className: "navbar  navbar-expand-sm navbar-light bg-light z-depth-1" },
+            React.createElement(react_router_dom_1.Link, { className: "navbar-brand", to: "/home" },
+                React.createElement("img", { src: "/assets/images/pluralsight_logo.png", height: "40" })),
+            React.createElement("button", { className: "navbar-toggler", type: "button", "data-toggle": "collapse", "data-target": "#navbarNav", "aria-controls": "navbarNav", "aria-expanded": "false", "aria-label": "Toggle navigation" },
+                React.createElement("span", { className: "navbar-toggler-icon" })),
+            React.createElement("div", { className: "collapse navbar-collapse ml-3", id: "navbarNav" },
+                React.createElement("ul", { className: "navbar-nav" },
+                    React.createElement("li", { className: "nav-item active mr-2" },
+                        React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/home" }, "Home")),
+                    React.createElement("li", { className: "nav-item mr-2" },
+                        React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/about" }, "About")),
+                    React.createElement("li", { className: "nav-item mr-2" },
+                        React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/authors" }, "Authors")),
+                    React.createElement("li", { className: "nav-item mr-2" },
+                        React.createElement(react_router_dom_1.Link, { className: "nav-link", to: "/courses" }, "Courses"))))));
+    }
+}
+exports.NavLinks = NavLinks;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/common/TextInput.tsx":
+/*!********************************************!*\
+  !*** ./src/redux/app/common/TextInput.tsx ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class TextInput extends React.Component {
+    constructor(props) {
+        super(props);
+        this.inputState = ['valid'];
+    }
+    render() {
+        this.inputState = ['valid'];
+        if (this.props.error)
+            this.inputState = ['has-error', 'invalid'];
+        return (React.createElement("div", { className: 'form-group ' + this.inputState.join(' ') },
+            React.createElement("label", { htmlFor: this.props.name }, this.props.label),
+            React.createElement("input", { type: "text", className: "form-control", name: this.props.name, ref: this.props.name, placeholder: this.props.placeholder, onChange: (e) => this.props.onChange(e), value: this.props.value }),
+            React.createElement("small", { className: "text-danger" }, this.props.error)));
+    }
+}
+exports.TextInput = TextInput;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/courses/CourseActions.ts":
+/*!************************************************!*\
+  !*** ./src/redux/app/courses/CourseActions.ts ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const ActionTypes_1 = __webpack_require__(/*! ../../constants/ActionTypes */ "./src/redux/constants/ActionTypes.ts");
+class CourseActions {
+    createCourse(course) {
+        return {
+            type: ActionTypes_1.ActionTypes.CREATE_COURSE,
+            course: course
+        };
+    }
+}
+exports.CourseActions = CourseActions;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/courses/CourseReducer.ts":
+/*!************************************************!*\
+  !*** ./src/redux/app/courses/CourseReducer.ts ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const ActionTypes_1 = __webpack_require__(/*! ../../constants/ActionTypes */ "./src/redux/constants/ActionTypes.ts");
+function courseReducer(courses = [], action) {
+    switch (action.type) {
+        case ActionTypes_1.ActionTypes.CREATE_COURSE:
+            return [...courses, Object.assign({}, action.course)];
+        default: return courses;
+    }
+}
+exports.courseReducer = courseReducer;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/courses/components/CoursesPage.tsx":
+/*!**********************************************************!*\
+  !*** ./src/redux/app/courses/components/CoursesPage.tsx ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const CreateCourse_1 = __webpack_require__(/*! ./CreateCourse */ "./src/redux/app/courses/components/CreateCourse.tsx");
+const Layout_1 = __webpack_require__(/*! ../../common/Layout */ "./src/redux/app/common/Layout.tsx");
+const dispatcher_1 = __webpack_require__(/*! ../../dispatcher */ "./src/redux/app/dispatcher.ts");
+const CourseActions_1 = __webpack_require__(/*! ../CourseActions */ "./src/redux/app/courses/CourseActions.ts");
+class CoursesPageRef extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            course: { title: '' }
+        };
+    }
+    handleSave(event) {
+        event.preventDefault();
+        this.props.actions.createCourse(this.state.course);
+        this.setState({
+            course: { title: '' }
+        });
+    }
+    handleTitleChange(event) {
+        this.setState({
+            course: { title: event.target.value }
+        });
+    }
+    courseRow(course, index) {
+        return (React.createElement("div", { key: index },
+            " ",
+            course.title));
+    }
+    render() {
+        return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
+                React.createElement("h1", null, "Courses"),
+                this.props.courses.map(this.courseRow),
+                React.createElement("h2", null, "Add course"),
+                React.createElement(CreateCourse_1.CreateCourse, { onSave: e => this.handleSave(e), onTitleChange: e => this.handleTitleChange(e), title: this.state.course.title })) }));
+    }
+}
+exports.CoursesPage = dispatcher_1.dispatch(CoursesPageRef, {
+    actions: CourseActions_1.CourseActions, state: ['courses']
+});
+
+
+/***/ }),
+
+/***/ "./src/redux/app/courses/components/CreateCourse.tsx":
+/*!***********************************************************!*\
+  !*** ./src/redux/app/courses/components/CreateCourse.tsx ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const TextInput_1 = __webpack_require__(/*! ../../common/TextInput */ "./src/redux/app/common/TextInput.tsx");
+class CreateCourse extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+    }
+    render() {
+        return (React.createElement("form", null,
+            React.createElement(TextInput_1.TextInput, { name: "courseTitle", label: "Course Title", value: this.props.title, onChange: this.props.onTitleChange }),
+            React.createElement("input", { type: "submit", value: "Save", onClick: this.props.onSave })));
+    }
+}
+exports.CreateCourse = CreateCourse;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/dispatcher.ts":
+/*!*************************************!*\
+  !*** ./src/redux/app/dispatcher.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+function dispatch(Component, mappings) {
+    let map = {
+        state: state => {
+            let finalState = {};
+            mappings.state.forEach(param => {
+                finalState[param] = state[param];
+            });
+            return finalState;
+        },
+        dispatch: dispatch => {
+            let types = Object.getOwnPropertyNames(mappings.actions.prototype);
+            let actions = new mappings.actions();
+            let newActions = {};
+            types.forEach(type => {
+                if (type == 'constructor')
+                    return;
+                newActions[type] = props => dispatch(actions[type](props));
+            });
+            return { actions: newActions };
+        }
+    };
+    return react_redux_1.connect(map.state, map.dispatch)(Component);
+}
+exports.dispatch = dispatch;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/reducers.ts":
+/*!***********************************!*\
+  !*** ./src/redux/app/reducers.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const redux_1 = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+const CourseReducer_1 = __webpack_require__(/*! ./courses/CourseReducer */ "./src/redux/app/courses/CourseReducer.ts");
+const authorsReducer_1 = __webpack_require__(/*! ./authors/authorsReducer */ "./src/redux/app/authors/authorsReducer.ts");
+const rootReducer = redux_1.combineReducers({
+    courses: CourseReducer_1.courseReducer,
+    authors: authorsReducer_1.authorsReducer
+});
+exports.default = rootReducer;
+
+
+/***/ }),
+
+/***/ "./src/redux/constants/ActionTypes.ts":
+/*!********************************************!*\
+  !*** ./src/redux/constants/ActionTypes.ts ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ActionTypes = {
+    CREATE_AUTHOR: 'CREATE_AUTHOR',
+    UPDATE_AUTHOR: 'UPDATE_AUTHOR',
+    DELETE_AUTHOR: 'DELETE_AUTHOR',
+    CREATE_COURSE: 'CREATE_COURSE',
+    INITIALIZE: 'INITIALIZE',
+};
 
 
 /***/ }),

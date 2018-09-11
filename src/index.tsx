@@ -9,8 +9,12 @@ import { GithubViewer } from "./basic/GithubViewer";
 // Flux
 import { FluxTutorial } from "./flux/Flux";
 
+// Redux
+import { Provider } from "react-redux";
+import { ReduxTutorial, store } from "./redux/Redux";
+
 let mountNode = document.getElementById("app");
-let activeExample = 'Flux';
+let activeExample = 'Redux';
 
 switch (activeExample) {
   case 'Hello':
@@ -24,5 +28,12 @@ switch (activeExample) {
     break;
   case 'Flux':
     ReactDOM.render(<FluxTutorial />, mountNode);
+    break;
+  case 'Redux':
+    ReactDOM.render(
+      <Provider store={store}>
+        <ReduxTutorial />
+      </Provider>
+    , mountNode);
     break;
 }
