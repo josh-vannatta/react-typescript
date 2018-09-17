@@ -1,41 +1,76 @@
-import * as _ from "lodash";
-import { authorData } from './authorData';
+import delay from './delay';
+const authors = [
+  {
+    id: 'cory-house',
+    firstName: 'Cory',
+    lastName: 'House'
+  },
+  {
+    id: 'scott-allen',
+    firstName: 'Scott',
+    lastName: 'Allen'
+  },
+  {
+    id: 'dan-wahlin',
+    firstName: 'Dan',
+    lastName: 'Wahlin'
+  }
+];
 
-let authors = authorData.authors;
+const generateId = (author) => {
+  return author.firstName.toLowerCase() + '-' + author.lastName.toLowerCase();
+};
 
 export default class AuthorApi  {
 
-	static getAllAuthors(): any {
-		return this.clone(authors);
-	}
+	static getAllAuthors() {
+    return new Promise((resolve, {}) => {
+      setTimeout(() => {
+        resolve(Object.assign([], authors));
+      }, delay);
+    });
+  }
 
-	static getAuthorById(id): Object {
-		let author = _.find(authors, {id: id});
-		return this.clone(author);
-	}
+  static saveAuthor(author) {
+    author = Object.assign({}, author); // to avoid manipulating object passed in.
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // Simulate server-side validation
+        const minAuthorNameLength = 3;
+        if (author.firstName.length < minAuthorNameLength) {
+          reject(`First Name must be at least ${minAuthorNameLength} characters.`);
+        }
 
-	static saveAuthor(author): Object {
-		author.id = this.generateId(author);
-		authors.push(author);
-		return this.clone(author);
-	}
+        if (author.lastName.length < minAuthorNameLength) {
+          reject(`Last Name must be at least ${minAuthorNameLength} characters.`);
+        }
 
-	static updateAuthor(author): Object {
-		let existingAuthorIndex = _.indexOf(authors, _.find(authors, {id: author.id}));
-		authors.splice(existingAuthorIndex, 1, author);
-		return this.clone(author);
-	}
+        if (author.id) {
+          const existingAuthorIndex = authors.findIndex(a => a.id == author.id);
+          authors.splice(existingAuthorIndex, 1, author);
+        } else {
+          //Just simulating creation here.
+          //The server would generate ids for new authors in a real app.
+          //Cloning so copy returned is passed by value rather than by reference.
+          author.id = generateId(author);
+          authors.push(author);
+        }
 
-	static deleteAuthor(id): void {
-		_.remove(authors, { id: id});
-	}
+        resolve(author);
+      }, delay);
+    });
+  }
 
-	private static generateId(author): string {
-		return author.firstName.toLowerCase() + '-' + author.lastName.toLowerCase();
-	}
-
-	private static clone(item): string {
-		return JSON.parse(JSON.stringify(item));
-	}
+  static deleteAuthor(authorId) {
+    return new Promise((resolve, {}) => {
+      setTimeout(() => {
+        const indexOfAuthorToDelete = authors.findIndex(author => {
+          return author.id == authorId;
+        });
+        authors.splice(indexOfAuthorToDelete, 1);
+        resolve();
+      }, delay);
+    });
+  }
 
 }

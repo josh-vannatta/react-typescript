@@ -87,6 +87,9 @@ export class ManageAuthorsPageRef extends React.Component <ManageAuthorsPageProp
 
 }
 
-export const ManageAuthorsPage = dispatch( ManageAuthorsPageRef, {
-  actions: AuthorActions, state: ['authors']
-})
+export const ManageAuthorsPage = dispatch(
+  ManageAuthorsPageRef, {
+    actions: AuthorActions,
+    state: ['authors']
+  }
+);

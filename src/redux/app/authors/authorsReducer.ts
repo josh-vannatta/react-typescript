@@ -20,6 +20,8 @@ class AuthorsReducer {
 
 export function authorsReducer(authors = [], action) {
   switch (action.type) {
+    case ActionTypes.AUTHORS_LOADED:
+      return action.authors;
     case ActionTypes.CREATE_AUTHOR:
       return AuthorsReducer.createAuthor(authors, action)
     case ActionTypes.UPDATE_AUTHOR:

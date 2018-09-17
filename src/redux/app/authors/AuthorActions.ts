@@ -7,10 +7,28 @@ export class AuthorActions {
     return _.find(authors, {id: id});
   }
 
+  public loadAuthors():any {
+    let _this = this;
+    return function(dispatch) {
+      return AuthorApi.getAllAuthors()
+        .then(authors => dispatch(_this.authorsLoaded(authors))
+      );
+    }
+  }
+
+  public authorsLoaded(authors) {
+    return {
+      type: ActionTypes.AUTHORS_LOADED,
+      authors: authors
+    }
+  }
+
   public createAuthor(author) {
+    AuthorApi.saveAuthor(author);
+    author.id = author.firstName + '-' + author.lastName;
     return {
       type: ActionTypes.CREATE_AUTHOR,
-      author: AuthorApi.saveAuthor(author)
+      author: author
     }
   }
 
@@ -25,7 +43,7 @@ export class AuthorActions {
   public updateAuthor(author) {
     return {
       type: ActionTypes.UPDATE_AUTHOR,
-      author: AuthorApi.updateAuthor(author)
+      author: author
     }
   }
 

@@ -1,57 +1,39 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
-import { CreateCourse } from './CreateCourse';
 import { Layout } from "../../common/Layout";
 import { dispatch } from '../../dispatcher';
 import { CourseActions } from '../CourseActions';
+import { CourseList } from './Courselist';
 
 export interface CoursesPageProps { courses, actions }
 class CoursesPageRef extends React.Component <CoursesPageProps, {}> {
   state  = {
     course: { title: '' }
   }
-  
+
   constructor(props, context) {
     super(props, context);
   }
 
-  private handleSave(event) {
-    event.preventDefault();
-    this.props.actions.createCourse(this.state.course);
-    this.setState({
-      course: { title: '' }
-    });
-  }
-
-  private handleTitleChange(event) {
-    this.setState({
-      course: {title: event.target.value}
-    })
-  }
-
-  private courseRow(course, index) {
-    return (
-      <div key={index}> { course.title }</div>
-    )
-  }
-
    public render(): JSX.Element {
+     const { courses } = this.props;
+
      return (
        <Layout body={
          <div className="p-5">
            <h1>Courses</h1>
-           {this.props.courses.map(this.courseRow)}
-           <h2>Add course</h2>
-           <CreateCourse
-             onSave={e=>this.handleSave(e)}
-             onTitleChange={e=>this.handleTitleChange(e)}
-             title={this.state.course.title} />
+           <CourseList courses={courses} />
+           <Link className="btn btn-primary" to="add-course"> Add new course</Link>
            </div>
        } />
      )
    }
 }
 
-export const CoursesPage = dispatch( CoursesPageRef, {
-  actions: CourseActions, state: ['courses']
-})
+export const CoursesPage = dispatch(
+  CoursesPageRef, {
+    actions: CourseActions,
+    state: ['courses']
+  }
+)

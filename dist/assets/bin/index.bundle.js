@@ -1044,6 +1044,7 @@ const AuthorPage_1 = __webpack_require__(/*! ./app/authors/components/AuthorPage
 const ManageAuthorsPage_1 = __webpack_require__(/*! ./app/authors/components/ManageAuthorsPage */ "./src/redux/app/authors/components/ManageAuthorsPage.tsx");
 const Error404_1 = __webpack_require__(/*! ./app/Error404 */ "./src/redux/app/Error404.tsx");
 const CoursesPage_1 = __webpack_require__(/*! ./app/courses/components/CoursesPage */ "./src/redux/app/courses/components/CoursesPage.tsx");
+const ManageCoursePage_1 = __webpack_require__(/*! ./app/courses/components/ManageCoursePage */ "./src/redux/app/courses/components/ManageCoursePage.tsx");
 class App extends React.Component {
     render() {
         return (React.createElement(react_router_dom_1.BrowserRouter, null,
@@ -1054,6 +1055,8 @@ class App extends React.Component {
                 React.createElement(react_router_dom_1.Route, { name: "add-author", path: "/add-author", component: ManageAuthorsPage_1.ManageAuthorsPage }),
                 React.createElement(react_router_dom_1.Route, { name: "manage-author", path: "/author/:id", component: ManageAuthorsPage_1.ManageAuthorsPage }),
                 React.createElement(react_router_dom_1.Route, { name: "courses", path: "/courses", component: CoursesPage_1.CoursesPage }),
+                React.createElement(react_router_dom_1.Route, { name: "add-course", path: "/add-course", component: ManageCoursePage_1.ManageCoursePage }),
+                React.createElement(react_router_dom_1.Route, { name: "manage-course", path: "/course/:id", component: ManageCoursePage_1.ManageCoursePage }),
                 React.createElement(react_router_dom_1.Redirect, { from: "/aboot", to: "/about" }),
                 React.createElement(react_router_dom_1.Redirect, { from: "/about/*", to: "/about" }),
                 React.createElement(react_router_dom_1.Redirect, { from: "/home", to: "/" }),
@@ -1079,13 +1082,12 @@ __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.js");
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const redux_1 = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
-const AuthorApi_1 = __webpack_require__(/*! ./api/AuthorApi */ "./src/redux/api/AuthorApi.ts");
+const redux_thunk_1 = __webpack_require__(/*! redux-thunk */ "./node_modules/redux-thunk/es/index.js");
 const reducers_1 = __webpack_require__(/*! ./app/reducers */ "./src/redux/app/reducers.ts");
-const store = redux_1.createStore(reducers_1.default, {
-    courses: [],
-    authors: AuthorApi_1.default.getAllAuthors()
-});
+const store = redux_1.createStore(reducers_1.default, {}, redux_1.applyMiddleware(redux_thunk_1.default));
 exports.store = store;
+const dispatcher_1 = __webpack_require__(/*! ./app/dispatcher */ "./src/redux/app/dispatcher.ts");
+dispatcher_1.loadStore(store);
 const BrowserRouter_1 = __webpack_require__(/*! ./BrowserRouter */ "./src/redux/BrowserRouter.tsx");
 class ReduxTutorial extends React.Component {
     render() {
@@ -1107,35 +1109,68 @@ exports.ReduxTutorial = ReduxTutorial;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const _ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-const authorData_1 = __webpack_require__(/*! ./authorData */ "./src/redux/api/authorData.ts");
-let authors = authorData_1.authorData.authors;
+const delay_1 = __webpack_require__(/*! ./delay */ "./src/redux/api/delay.ts");
+const authors = [
+    {
+        id: 'cory-house',
+        firstName: 'Cory',
+        lastName: 'House'
+    },
+    {
+        id: 'scott-allen',
+        firstName: 'Scott',
+        lastName: 'Allen'
+    },
+    {
+        id: 'dan-wahlin',
+        firstName: 'Dan',
+        lastName: 'Wahlin'
+    }
+];
+const generateId = (author) => {
+    return author.firstName.toLowerCase() + '-' + author.lastName.toLowerCase();
+};
 class AuthorApi {
     static getAllAuthors() {
-        return this.clone(authors);
-    }
-    static getAuthorById(id) {
-        let author = _.find(authors, { id: id });
-        return this.clone(author);
+        return new Promise((resolve, {}) => {
+            setTimeout(() => {
+                resolve(Object.assign([], authors));
+            }, delay_1.default);
+        });
     }
     static saveAuthor(author) {
-        author.id = this.generateId(author);
-        authors.push(author);
-        return this.clone(author);
+        author = Object.assign({}, author);
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const minAuthorNameLength = 3;
+                if (author.firstName.length < minAuthorNameLength) {
+                    reject(`First Name must be at least ${minAuthorNameLength} characters.`);
+                }
+                if (author.lastName.length < minAuthorNameLength) {
+                    reject(`Last Name must be at least ${minAuthorNameLength} characters.`);
+                }
+                if (author.id) {
+                    const existingAuthorIndex = authors.findIndex(a => a.id == author.id);
+                    authors.splice(existingAuthorIndex, 1, author);
+                }
+                else {
+                    author.id = generateId(author);
+                    authors.push(author);
+                }
+                resolve(author);
+            }, delay_1.default);
+        });
     }
-    static updateAuthor(author) {
-        let existingAuthorIndex = _.indexOf(authors, _.find(authors, { id: author.id }));
-        authors.splice(existingAuthorIndex, 1, author);
-        return this.clone(author);
-    }
-    static deleteAuthor(id) {
-        _.remove(authors, { id: id });
-    }
-    static generateId(author) {
-        return author.firstName.toLowerCase() + '-' + author.lastName.toLowerCase();
-    }
-    static clone(item) {
-        return JSON.parse(JSON.stringify(item));
+    static deleteAuthor(authorId) {
+        return new Promise((resolve, {}) => {
+            setTimeout(() => {
+                const indexOfAuthorToDelete = authors.findIndex(author => {
+                    return author.id == authorId;
+                });
+                authors.splice(indexOfAuthorToDelete, 1);
+                resolve();
+            }, delay_1.default);
+        });
     }
 }
 exports.default = AuthorApi;
@@ -1143,35 +1178,120 @@ exports.default = AuthorApi;
 
 /***/ }),
 
-/***/ "./src/redux/api/authorData.ts":
-/*!*************************************!*\
-  !*** ./src/redux/api/authorData.ts ***!
-  \*************************************/
+/***/ "./src/redux/api/CourseApi.ts":
+/*!************************************!*\
+  !*** ./src/redux/api/CourseApi.ts ***!
+  \************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authorData = {
-    authors: [
-        {
-            id: 'cory-house',
-            firstName: 'Cory',
-            lastName: 'House'
-        },
-        {
-            id: 'scott-allen',
-            firstName: 'Scott',
-            lastName: 'Allen'
-        },
-        {
-            id: 'dan-wahlin',
-            firstName: 'Dan',
-            lastName: 'Wahlin'
-        }
-    ]
+const delay_1 = __webpack_require__(/*! ./delay */ "./src/redux/api/delay.ts");
+const courses = [
+    {
+        id: "react-flux-building-applications",
+        title: "Building Applications in React and Flux",
+        watchHref: "http://www.pluralsight.com/courses/react-flux-building-applications",
+        authorId: "cory-house",
+        length: "5:08",
+        category: "JavaScript"
+    },
+    {
+        id: "clean-code",
+        title: "Clean Code: Writing Code for Humans",
+        watchHref: "http://www.pluralsight.com/courses/writing-clean-code-humans",
+        authorId: "cory-house",
+        length: "3:10",
+        category: "Software Practices"
+    },
+    {
+        id: "architecture",
+        title: "Architecting Applications for the Real World",
+        watchHref: "http://www.pluralsight.com/courses/architecting-applications-dotnet",
+        authorId: "cory-house",
+        length: "2:52",
+        category: "Software Architecture"
+    },
+    {
+        id: "career-reboot-for-developer-mind",
+        title: "Becoming an Outlier: Reprogramming the Developer Mind",
+        watchHref: "http://www.pluralsight.com/courses/career-reboot-for-developer-mind",
+        authorId: "cory-house",
+        length: "2:30",
+        category: "Career"
+    },
+    {
+        id: "web-components-shadow-dom",
+        title: "Web Component Fundamentals",
+        watchHref: "http://www.pluralsight.com/courses/web-components-shadow-dom",
+        authorId: "cory-house",
+        length: "5:10",
+        category: "HTML5"
+    }
+];
+function replaceAll(str, find, replace) {
+    return str.replace(new RegExp(find, 'g'), replace);
+}
+const generateId = (course) => {
+    return replaceAll(course.title, ' ', '-');
 };
+class CourseApi {
+    static getAllCourses() {
+        return new Promise((resolve, {}) => {
+            setTimeout(() => resolve(Object.assign([], courses)), delay_1.default);
+        });
+    }
+    static saveCourse(course) {
+        course = Object.assign({}, course);
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const minCourseTitleLength = 1;
+                if (course.title.length < minCourseTitleLength) {
+                    reject(`Title must be at least ${minCourseTitleLength} characters.`);
+                }
+                if (course.id) {
+                    const existingCourseIndex = courses.findIndex(a => a.id == course.id);
+                    courses.splice(existingCourseIndex, 1, course);
+                }
+                else {
+                    course.id = generateId(course);
+                    course.watchHref = `http://www.pluralsight.com/courses/${course.id}`;
+                    courses.push(course);
+                }
+                resolve(course);
+            }, delay_1.default);
+        });
+    }
+    static deleteCourse(courseId) {
+        return new Promise((resolve, {}) => {
+            setTimeout(() => {
+                const indexOfCourseToDelete = courses.findIndex(course => {
+                    return course.id == courseId;
+                });
+                courses.splice(indexOfCourseToDelete, 1);
+                resolve();
+            }, delay_1.default);
+        });
+    }
+}
+exports.default = CourseApi;
+
+
+/***/ }),
+
+/***/ "./src/redux/api/delay.ts":
+/*!********************************!*\
+  !*** ./src/redux/api/delay.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = 1000;
 
 
 /***/ }),
@@ -1276,10 +1396,25 @@ class AuthorActions {
     static getAuthorById(authors, id) {
         return _.find(authors, { id: id });
     }
+    loadAuthors() {
+        let _this = this;
+        return function (dispatch) {
+            return AuthorApi_1.default.getAllAuthors()
+                .then(authors => dispatch(_this.authorsLoaded(authors)));
+        };
+    }
+    authorsLoaded(authors) {
+        return {
+            type: ActionTypes_1.ActionTypes.AUTHORS_LOADED,
+            authors: authors
+        };
+    }
     createAuthor(author) {
+        AuthorApi_1.default.saveAuthor(author);
+        author.id = author.firstName + '-' + author.lastName;
         return {
             type: ActionTypes_1.ActionTypes.CREATE_AUTHOR,
-            author: AuthorApi_1.default.saveAuthor(author)
+            author: author
         };
     }
     deleteAuthor(author) {
@@ -1292,7 +1427,7 @@ class AuthorActions {
     updateAuthor(author) {
         return {
             type: ActionTypes_1.ActionTypes.UPDATE_AUTHOR,
-            author: AuthorApi_1.default.updateAuthor(author)
+            author: author
         };
     }
 }
@@ -1329,6 +1464,8 @@ class AuthorsReducer {
 }
 function authorsReducer(authors = [], action) {
     switch (action.type) {
+        case ActionTypes_1.ActionTypes.AUTHORS_LOADED:
+            return action.authors;
         case ActionTypes_1.ActionTypes.CREATE_AUTHOR:
             return AuthorsReducer.createAuthor(authors, action);
         case ActionTypes_1.ActionTypes.UPDATE_AUTHOR:
@@ -1443,7 +1580,8 @@ class AuthorPageRef extends React.Component {
     }
 }
 exports.AuthorPage = dispatcher_1.dispatch(AuthorPageRef, {
-    actions: AuthorActions_1.AuthorActions, state: ['authors']
+    actions: AuthorActions_1.AuthorActions,
+    state: ['authors']
 });
 
 
@@ -1528,7 +1666,8 @@ class ManageAuthorsPageRef extends React.Component {
 }
 exports.ManageAuthorsPageRef = ManageAuthorsPageRef;
 exports.ManageAuthorsPage = dispatcher_1.dispatch(ManageAuthorsPageRef, {
-    actions: AuthorActions_1.AuthorActions, state: ['authors']
+    actions: AuthorActions_1.AuthorActions,
+    state: ['authors']
 });
 
 
@@ -1597,6 +1736,42 @@ exports.NavLinks = NavLinks;
 
 /***/ }),
 
+/***/ "./src/redux/app/common/SelectInput.tsx":
+/*!**********************************************!*\
+  !*** ./src/redux/app/common/SelectInput.tsx ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class SelectInput extends React.Component {
+    constructor(props) {
+        super(props);
+        this.inputState = ['valid'];
+    }
+    render() {
+        this.inputState = ['valid'];
+        if (this.props.error)
+            this.inputState = ['has-error', 'invalid'];
+        return (React.createElement("div", { className: 'form-group ' + this.inputState.join(' ') },
+            React.createElement("label", { htmlFor: this.props.name }, this.props.label),
+            React.createElement("select", { className: "form-control", name: this.props.name, onChange: (e) => this.props.onChange(e), value: this.props.value },
+                React.createElement("option", null,
+                    " ",
+                    this.props.defaultOption,
+                    " "),
+                this.props.options.map((option) => React.createElement("option", { key: option.value, value: option.value }, option.text))),
+            this.props.error && React.createElement("small", { className: "text-danger" }, this.props.error)));
+    }
+}
+exports.SelectInput = SelectInput;
+
+
+/***/ }),
+
 /***/ "./src/redux/app/common/TextInput.tsx":
 /*!********************************************!*\
   !*** ./src/redux/app/common/TextInput.tsx ***!
@@ -1619,8 +1794,8 @@ class TextInput extends React.Component {
             this.inputState = ['has-error', 'invalid'];
         return (React.createElement("div", { className: 'form-group ' + this.inputState.join(' ') },
             React.createElement("label", { htmlFor: this.props.name }, this.props.label),
-            React.createElement("input", { type: "text", className: "form-control", name: this.props.name, ref: this.props.name, placeholder: this.props.placeholder, onChange: (e) => this.props.onChange(e), value: this.props.value }),
-            React.createElement("small", { className: "text-danger" }, this.props.error)));
+            React.createElement("input", { type: "text", className: "form-control", name: this.props.name, placeholder: this.props.placeholder, onChange: (e) => this.props.onChange(e), value: this.props.value }),
+            this.props.error && React.createElement("small", { className: "text-danger" }, this.props.error)));
     }
 }
 exports.TextInput = TextInput;
@@ -1639,14 +1814,61 @@ exports.TextInput = TextInput;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const ActionTypes_1 = __webpack_require__(/*! ../../constants/ActionTypes */ "./src/redux/constants/ActionTypes.ts");
+const CourseApi_1 = __webpack_require__(/*! ../../api/CourseApi */ "./src/redux/api/CourseApi.ts");
 class CourseActions {
-    createCourse(course) {
+    static getCourseById(courses, id) {
+        let course = courses.filter(course => course.id == id);
+        if (course.length > 0)
+            return course[0];
+        return null;
+    }
+    createCourseSuccess(course) {
         return {
             type: ActionTypes_1.ActionTypes.CREATE_COURSE,
             course: course
         };
     }
+    updateCourseSuccess(course) {
+        return {
+            type: ActionTypes_1.ActionTypes.UPDATE_COURSE,
+            course: course
+        };
+    }
+    saveCourse(course) {
+        let _this = this;
+        return function (dispatch) {
+            return CourseApi_1.default.saveCourse(course)
+                .then(savedCourse => {
+                if (course.id == '')
+                    dispatch(_this.createCourseSuccess(savedCourse));
+                else
+                    dispatch(_this.updateCourseSuccess(savedCourse));
+            })
+                .catch(error => {
+                throw (error);
+            });
+        };
+    }
+    loadCoursesSuccess(courses) {
+        return {
+            type: ActionTypes_1.ActionTypes.LOAD_COURSES_SUCCESS,
+            courses: courses
+        };
+    }
+    loadCourses() {
+        let _this = this;
+        return function (dispatch) {
+            return CourseApi_1.default.getAllCourses()
+                .then(courses => {
+                dispatch(_this.loadCoursesSuccess(courses));
+            })
+                .catch(error => {
+                throw (error);
+            });
+        };
+    }
 }
+CourseActions.instance = self;
 exports.CourseActions = CourseActions;
 
 
@@ -1666,11 +1888,110 @@ const ActionTypes_1 = __webpack_require__(/*! ../../constants/ActionTypes */ "./
 function courseReducer(courses = [], action) {
     switch (action.type) {
         case ActionTypes_1.ActionTypes.CREATE_COURSE:
-            return [...courses, Object.assign({}, action.course)];
+            return [
+                ...courses,
+                Object.assign({}, action.course)
+            ];
+        case ActionTypes_1.ActionTypes.UPDATE_COURSE:
+            return [
+                ...courses.filter(course => course.id !== action.course.id),
+                Object.assign({}, action.course)
+            ];
+        case ActionTypes_1.ActionTypes.LOAD_COURSES_SUCCESS:
+            return action.courses;
         default: return courses;
     }
 }
 exports.courseReducer = courseReducer;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/courses/components/CourseForm.tsx":
+/*!*********************************************************!*\
+  !*** ./src/redux/app/courses/components/CourseForm.tsx ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const TextInput_1 = __webpack_require__(/*! ../../common/TextInput */ "./src/redux/app/common/TextInput.tsx");
+const SelectInput_1 = __webpack_require__(/*! ../../common/SelectInput */ "./src/redux/app/common/SelectInput.tsx");
+class CourseForm extends React.Component {
+    render() {
+        const { course, allAuthors, onSave, onChange, loading, errors } = this.props;
+        return (React.createElement("form", { onSubmit: this.props.onSave },
+            React.createElement(TextInput_1.TextInput, { name: "title", label: "Title", onChange: onChange, value: course.title, error: errors.title ? errors.title : false }),
+            React.createElement(SelectInput_1.SelectInput, { name: "authorId", label: "Author", options: allAuthors, defaultOption: "Select Author", onChange: onChange, value: course.authorId, error: errors.authorId ? errors.authorId : false }),
+            React.createElement(TextInput_1.TextInput, { name: "category", label: "Category", onChange: onChange, value: course.category, error: errors.category ? errors.category : false }),
+            React.createElement(TextInput_1.TextInput, { name: "length", label: "Length", onChange: onChange, value: course.length, error: errors.length ? errors.length : false }),
+            React.createElement("input", { type: "submit", className: "btn btn-primary", disabled: loading, value: loading ? 'Saving...' : 'Save', onClick: onSave })));
+    }
+}
+exports.CourseForm = CourseForm;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/courses/components/CourseListRow.tsx":
+/*!************************************************************!*\
+  !*** ./src/redux/app/courses/components/CourseListRow.tsx ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+class CourseListRow extends React.Component {
+    render() {
+        let course = this.props.course;
+        return (React.createElement("tr", null,
+            React.createElement("td", null,
+                React.createElement("a", { href: course.watchHref, target: "_blank" }, "Watch")),
+            React.createElement("td", null,
+                React.createElement(react_router_dom_1.Link, { to: '/course/' + course.id }, course.title)),
+            React.createElement("td", null, course.authorId),
+            React.createElement("td", null, course.category),
+            React.createElement("td", null, course.length)));
+    }
+}
+exports.CourseListRow = CourseListRow;
+
+
+/***/ }),
+
+/***/ "./src/redux/app/courses/components/Courselist.tsx":
+/*!*********************************************************!*\
+  !*** ./src/redux/app/courses/components/Courselist.tsx ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const CourseListRow_1 = __webpack_require__(/*! ./CourseListRow */ "./src/redux/app/courses/components/CourseListRow.tsx");
+class CourseList extends React.Component {
+    render() {
+        return (React.createElement("table", { className: "table" },
+            React.createElement("thead", null,
+                React.createElement("tr", null,
+                    React.createElement("th", null, "\u00A0"),
+                    React.createElement("th", null, "Title"),
+                    React.createElement("th", null, "Author"),
+                    React.createElement("th", null, "Category"),
+                    React.createElement("th", null, "Length"))),
+            React.createElement("tbody", null, this.props.courses.map(course => React.createElement(CourseListRow_1.CourseListRow, { key: course.id, course: course })))));
+    }
+}
+exports.CourseList = CourseList;
 
 
 /***/ }),
@@ -1686,10 +2007,11 @@ exports.courseReducer = courseReducer;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const CreateCourse_1 = __webpack_require__(/*! ./CreateCourse */ "./src/redux/app/courses/components/CreateCourse.tsx");
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
 const Layout_1 = __webpack_require__(/*! ../../common/Layout */ "./src/redux/app/common/Layout.tsx");
 const dispatcher_1 = __webpack_require__(/*! ../../dispatcher */ "./src/redux/app/dispatcher.ts");
 const CourseActions_1 = __webpack_require__(/*! ../CourseActions */ "./src/redux/app/courses/CourseActions.ts");
+const Courselist_1 = __webpack_require__(/*! ./Courselist */ "./src/redux/app/courses/components/Courselist.tsx");
 class CoursesPageRef extends React.Component {
     constructor(props, context) {
         super(props, context);
@@ -1697,42 +2019,26 @@ class CoursesPageRef extends React.Component {
             course: { title: '' }
         };
     }
-    handleSave(event) {
-        event.preventDefault();
-        this.props.actions.createCourse(this.state.course);
-        this.setState({
-            course: { title: '' }
-        });
-    }
-    handleTitleChange(event) {
-        this.setState({
-            course: { title: event.target.value }
-        });
-    }
-    courseRow(course, index) {
-        return (React.createElement("div", { key: index },
-            " ",
-            course.title));
-    }
     render() {
+        const { courses } = this.props;
         return (React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
                 React.createElement("h1", null, "Courses"),
-                this.props.courses.map(this.courseRow),
-                React.createElement("h2", null, "Add course"),
-                React.createElement(CreateCourse_1.CreateCourse, { onSave: e => this.handleSave(e), onTitleChange: e => this.handleTitleChange(e), title: this.state.course.title })) }));
+                React.createElement(Courselist_1.CourseList, { courses: courses }),
+                React.createElement(react_router_dom_1.Link, { className: "btn btn-primary", to: "add-course" }, " Add new course")) }));
     }
 }
 exports.CoursesPage = dispatcher_1.dispatch(CoursesPageRef, {
-    actions: CourseActions_1.CourseActions, state: ['courses']
+    actions: CourseActions_1.CourseActions,
+    state: ['courses']
 });
 
 
 /***/ }),
 
-/***/ "./src/redux/app/courses/components/CreateCourse.tsx":
-/*!***********************************************************!*\
-  !*** ./src/redux/app/courses/components/CreateCourse.tsx ***!
-  \***********************************************************/
+/***/ "./src/redux/app/courses/components/ManageCoursePage.tsx":
+/*!***************************************************************!*\
+  !*** ./src/redux/app/courses/components/ManageCoursePage.tsx ***!
+  \***************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1740,18 +2046,70 @@ exports.CoursesPage = dispatcher_1.dispatch(CoursesPageRef, {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const TextInput_1 = __webpack_require__(/*! ../../common/TextInput */ "./src/redux/app/common/TextInput.tsx");
-class CreateCourse extends React.Component {
-    constructor(props, context) {
-        super(props, context);
+const react_router_dom_1 = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+const CourseActions_1 = __webpack_require__(/*! ../CourseActions */ "./src/redux/app/courses/CourseActions.ts");
+const dispatcher_1 = __webpack_require__(/*! ../../dispatcher */ "./src/redux/app/dispatcher.ts");
+const Layout_1 = __webpack_require__(/*! ../../common/Layout */ "./src/redux/app/common/Layout.tsx");
+const CourseForm_1 = __webpack_require__(/*! ./CourseForm */ "./src/redux/app/courses/components/CourseForm.tsx");
+class ManageCoursePageRef extends React.Component {
+    constructor(props) {
+        super(props);
+        this.title = 'Create new course';
+        this.state = {
+            course: Object.assign({}, this.props.course),
+            courseSaved: false,
+            dirty: false,
+            invalid: false,
+            errors: {},
+            isLoading: false
+        };
+        this.loadCourse(props);
+    }
+    componentWillReceiveProps(props) {
+        this.loadCourse(props);
+    }
+    loadCourse(props) {
+        if (props.match.params.id && props.courses.length > 0) {
+            this.state.course = CourseActions_1.CourseActions.getCourseById(props.courses, props.match.params.id);
+            this.title = 'Edit course: ' + this.state.course.title;
+        }
+    }
+    saveCourse(e) {
+        e.preventDefault();
+        this.props.actions.saveCourse(this.state.course);
+        this.setState({
+            courseSaved: true
+        });
+    }
+    handleChange(e) {
+        let course = Object.assign({}, this.state.course);
+        course[e.target.name] = e.target.value;
+        this.setState({ course: course });
     }
     render() {
-        return (React.createElement("form", null,
-            React.createElement(TextInput_1.TextInput, { name: "courseTitle", label: "Course Title", value: this.props.title, onChange: this.props.onTitleChange }),
-            React.createElement("input", { type: "submit", value: "Save", onClick: this.props.onSave })));
+        if (this.state.courseSaved)
+            return React.createElement(react_router_dom_1.Redirect, { to: "/courses" });
+        return React.createElement(Layout_1.Layout, { body: React.createElement("div", { className: "p-5" },
+                React.createElement("h1", null, this.title),
+                React.createElement(CourseForm_1.CourseForm, { course: this.state.course, allAuthors: this.props.authors, onSave: (e) => this.saveCourse(e), onChange: (e) => this.handleChange(e), errors: this.state.errors, loading: this.state.isLoading })) });
     }
 }
-exports.CreateCourse = CreateCourse;
+exports.ManageCoursePageRef = ManageCoursePageRef;
+const prepareCourse = {
+    id: '', watchHref: '', title: '', authorId: '', length: '', category: ''
+};
+const prepareAuthors = authors => authors.map(author => ({
+    value: author.id,
+    text: author.firstName + ' ' + author.lastName,
+}));
+exports.ManageCoursePage = dispatcher_1.dispatch(ManageCoursePageRef, {
+    actions: CourseActions_1.CourseActions,
+    state: state => ({
+        course: prepareCourse,
+        courses: state.courses,
+        authors: prepareAuthors(state.authors)
+    })
+});
 
 
 /***/ }),
@@ -1767,9 +2125,17 @@ exports.CreateCourse = CreateCourse;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+const CourseActions_1 = __webpack_require__(/*! ./courses/CourseActions */ "./src/redux/app/courses/CourseActions.ts");
+const AuthorActions_1 = __webpack_require__(/*! ./authors/AuthorActions */ "./src/redux/app/authors/AuthorActions.ts");
 function dispatch(Component, mappings) {
     let map = {
         state: state => {
+            if (mappings.state == null || !mappings.state)
+                return {};
+            if (typeof mappings.state === 'object')
+                return state;
+            if (typeof mappings.state === 'function')
+                return state => mappings.state(state);
             let finalState = {};
             mappings.state.forEach(param => {
                 finalState[param] = state[param];
@@ -1791,6 +2157,13 @@ function dispatch(Component, mappings) {
     return react_redux_1.connect(map.state, map.dispatch)(Component);
 }
 exports.dispatch = dispatch;
+function loadStore(store) {
+    let courseActions = new CourseActions_1.CourseActions();
+    let authorActions = new AuthorActions_1.AuthorActions();
+    store.dispatch(courseActions.loadCourses());
+    store.dispatch(authorActions.loadAuthors());
+}
+exports.loadStore = loadStore;
 
 
 /***/ }),
@@ -1831,7 +2204,11 @@ exports.ActionTypes = {
     CREATE_AUTHOR: 'CREATE_AUTHOR',
     UPDATE_AUTHOR: 'UPDATE_AUTHOR',
     DELETE_AUTHOR: 'DELETE_AUTHOR',
+    AUTHORS_LOADED: 'AUTHORS_LOADED',
     CREATE_COURSE: 'CREATE_COURSE',
+    UPDATE_COURSE: 'UPDATE_COURSE',
+    GET_COURSE: 'GET_COURSE',
+    LOAD_COURSES_SUCCESS: 'LOAD_COURSES_SUCCESS',
     INITIALIZE: 'INITIALIZE',
 };
 

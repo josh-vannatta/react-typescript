@@ -13,7 +13,10 @@ class AuthorPageRef extends React.Component<AuthorPageProps, {}> {
     return (
       <Layout body={
         <div className="p-5">
-          <AuthorList authors={this.props.authors} delete={author=>this.props.actions.deleteAuthor(author)}/>
+          <AuthorList
+            authors={this.props.authors}
+            delete={author=>this.props.actions.deleteAuthor(author)}
+          />
           <Link className="btn btn-primary" to="add-author"> Add new author</Link>
         </div>
       } />
@@ -22,6 +25,9 @@ class AuthorPageRef extends React.Component<AuthorPageProps, {}> {
 
 }
 
-export const AuthorPage = dispatch(AuthorPageRef, {
-  actions: AuthorActions, state: ['authors']
-})
+export const AuthorPage = dispatch(
+  AuthorPageRef, {
+    actions: AuthorActions,
+    state: ['authors']
+  }
+)

@@ -1,15 +1,16 @@
 import * as React from 'react';
 
-export interface TextInputProps {
-  onChange: Function,
+export interface SelectInputProps {
   name: string,
   label: string,
-  placeholder?: string,
+  onChange: Function,
+  defaultOption: string,
   value?: string,
   error?: Array<string>
+  options: Array<Object>
 }
 
-export class TextInput extends React.Component <TextInputProps, {}> {
+export class SelectInput extends React.Component <SelectInputProps, {}> {
   private inputState = ['valid'];
 
   constructor(props) {
@@ -21,14 +22,22 @@ export class TextInput extends React.Component <TextInputProps, {}> {
      if (this.props.error)
       this.inputState = ['has-error', 'invalid'];
      return (
-       <div className={'form-group ' + this.inputState.join(' ')}>
+       <div className={'form-group ' + this.inputState.join(' ')}>         
          <label htmlFor={this.props.name}>{this.props.label}</label>
-         <input type="text"
+         <select
            className="form-control"
            name={this.props.name}
-           placeholder={this.props.placeholder}
            onChange={(e)=>this.props.onChange(e)}
-           value={this.props.value} />
+           value={this.props.value} >
+          <option > { this.props.defaultOption } </option>
+           { this.props.options.map(
+             (option: {value, text}) => <option
+                 key={option.value}
+                 value={option.value}>
+                 {option.text}
+               </option>
+             ) }
+         </select>
         { this.props.error && <small className="text-danger">{this.props.error}</small> }
        </div>
      )

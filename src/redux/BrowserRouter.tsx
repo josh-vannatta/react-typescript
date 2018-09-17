@@ -7,6 +7,7 @@ import { AuthorPage } from "./app/authors/components/AuthorPage";
 import { ManageAuthorsPage } from "./app/authors/components/ManageAuthorsPage";
 import { Error404 } from "./app/Error404";
 import { CoursesPage } from "./app/courses/components/CoursesPage";
+import { ManageCoursePage } from "./app/courses/components/ManageCoursePage";
 
 export class App extends React.Component {
 
@@ -20,6 +21,8 @@ export class App extends React.Component {
           <Route name="add-author" path="/add-author" component={ManageAuthorsPage}/>
           <Route name="manage-author" path="/author/:id" component={ManageAuthorsPage}/>
           <Route name="courses" path="/courses" component={CoursesPage}/>
+          <Route name="add-course" path="/add-course" component={ManageCoursePage}/>
+          <Route name="manage-course" path="/course/:id" component={ManageCoursePage}/>
           <Redirect from="/aboot" to="/about" />
           <Redirect from="/about/*" to="/about" />
           <Redirect from="/home" to="/" />
